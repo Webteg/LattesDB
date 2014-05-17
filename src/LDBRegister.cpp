@@ -23,6 +23,14 @@ LDBRegister::LDBRegister(pugi::xml_parse_result result) {
 	*/
 }
 
+LDBRegister::LDBRegister(string name, string institution, vector<string> journals,
+			vector<string> events){
+	this->name = name;
+	this->institution = institution;
+	this->journals = journals;
+	this->events = events;
+}
+
 string LDBRegister::get_name() {
 	return name;
 }
