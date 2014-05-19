@@ -9,18 +9,20 @@
 
 namespace std {
 
-LDBRegister::LDBRegister(pugi::xml_parse_result result) {
+LDBRegister::LDBRegister(pugi::xml_document doc) {
 	// TODO Auto-generated constructor stub
-	/*
-	name = result.???;
-	institution = result.???;
+	
+	pugi::xml_node events_works = doc.child("CURRICULO-VITAE").child("PRODUCAO-BIBLIOGRAFICA").child("TRABALHOS-EM-EVENTOS");
+	
+	name = doc.child("CURRICULO-VITAE").child("DADOS-GERAIS").attribute("NOME-COMPLETO").value();
+	institution = doc.child("CURRICULO-VITAE").child("DADOS-GERAIS").child("ENDERECO-PROFISSIONAL").attribute("NOME_INSTITUICAO-EMPRESA").value();
 	while(???){
 		journals.pushback(???);
 	}
-	while(???){
-		events.pushback(???);
+	while(pugi::xml_node work = events_works.first_child(); work; work = work.next_sibling()){
+		events.pushback(work.child("DADOS-BASICOS-DO-TRABALHO").attribute("TITULO-DO-TRABALHO").value());
 	}
-	*/
+	
 }
 
 LDBRegister::LDBRegister(string name, string institution, vector<string> journals,
