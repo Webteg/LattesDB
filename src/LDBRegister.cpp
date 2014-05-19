@@ -13,11 +13,12 @@ LDBRegister::LDBRegister(pugi::xml_document doc) {
 	// TODO Auto-generated constructor stub
 	
 	pugi::xml_node events_works = doc.child("CURRICULO-VITAE").child("PRODUCAO-BIBLIOGRAFICA").child("TRABALHOS-EM-EVENTOS");
+	pugi::xml_node journal_works = doc.child("CURRICULO-VITAE").child("PRODUCAO-BIBLIOGRAFICA").child("ARTIGOS-PUBLICADOS");
 	
 	name = doc.child("CURRICULO-VITAE").child("DADOS-GERAIS").attribute("NOME-COMPLETO").value();
 	institution = doc.child("CURRICULO-VITAE").child("DADOS-GERAIS").child("ENDERECO-PROFISSIONAL").attribute("NOME_INSTITUICAO-EMPRESA").value();
-	while(???){
-		journals.pushback(???);
+	while(pugi::xml_node work = journal_works.first_child(); work; work = work.next_sibling()){
+		journals.pushback(work.child("DADOS-BASICOS-DO-TRABALHO").attribute("TITULO-DO-TRABALHO").value());
 	}
 	while(pugi::xml_node work = events_works.first_child(); work; work = work.next_sibling()){
 		events.pushback(work.child("DADOS-BASICOS-DO-TRABALHO").attribute("TITULO-DO-TRABALHO").value());
