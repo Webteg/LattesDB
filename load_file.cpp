@@ -7,12 +7,9 @@
 #include <dirent.h>
 #include <string.h>
 
-void listFile();
-
 int main()
 {
 //[code_load_file
-    listFile();
 
     pugi::xml_document doc;
 
@@ -21,6 +18,7 @@ int main()
     
     DIR *pDIR;
 	struct dirent *entry;
+	/*
 	if( pDIR=opendir("./xmlLattes") ){
 		while(entry = readdir(pDIR)){
 			if( strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0 ){
@@ -30,13 +28,16 @@ int main()
 		}
 		closedir(pDIR);
 	}
-
+	*/
+	result = doc.load_file("xmlLattes/0455487141833418.xml");
+	pugi::xml_node works = doc.child("CURRICULO-VITAE").child("PRODUCAO-BIBLIOGRAFICA").child("ARTIGOS-PUBLICADOS");
+	for (pugi::xml_node work = works.first_child(); work; work = work.next_sibling()) {
+		std::cout << work.child("DADOS-BASICOS-DO-ARTIGO").attribute("TITULO-DO-ARTIGO").value() << "\n";
+		
+	}
     //std::cout << "Load result: " << result.description() << ", nome do pesquisador: " << doc.child("CURRICULO-VITAE").child("DADOS-GERAIS").attribute("NOME-COMPLETO").value() << std::endl;
     return 0;
 //]
 }
 
-void listFile() {
-	
-}
 // vim:et
