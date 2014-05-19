@@ -14,81 +14,86 @@
 
 namespace std {
 
+/**
+ * Class for manipulatin a LattesDB register in main memory.
+ */
 class LDBRegister {
-	// full name of the researcher.
-	string name;
 
-	// institution which the researcher is associated.
-	string institution;
+	string name; /**< Full name of the researcher. */
 
-	// list of publications in journals of the researcher.
-	vector<string> journals;
+	string institution; /**< Institution which the researcher is associated. */
 
-	// list of publications in events of the researcher.
-	vector<string> events;
+	vector<string> journals; /**< List of publications in journals of the researcher. */
+
+	vector<string> events; /**< List of publications in events of the researcher. */
+
 public:
+
 	/**
-	 * Creates a new register from a pugi::xml_parse_result.
-	 * @param result - the result of xml parsing.
+	 * Creates a new register from a pugi::xml_document.
+	 * @param result The result of xml parsing.
 	 */
-	LDBRegister(pugi::xml_parse_result result);
+	LDBRegister(pugi::xml_document doc);
 
 	/**
 	 * Creates a new register from parameters
-	 * @param name - full name of the researcher.
-	 * @param institution - institution which the researcher is associated.
-	 * @param journals - list of publications in journals of the researcher.
-	 * @param events - list of publications in events of the researcher.
+	 * @param name Full name of the researcher.
+	 * @param institution Institution which the researcher is associated.
+	 * @param journals List of publications in journals of the researcher.
+	 * @param events List of publications in events of the researcher.
 	 */
 	LDBRegister(string name, string institution, vector<string> journals,
 			vector<string> events);
 
 	/**
 	 * Returns the full name of the researcher.
-	 * @return the full name of the researcher.
+	 * @return The full name of the researcher.
 	 */
 	string get_name();
 
 	/**
 	 * Returns the institution which the researcher is associated.
-	 * @return the institution which the researcher is associated.
+	 * @return The institution which the researcher is associated.
 	 */
 	string get_institution();
 
 	/**
 	 * Returns the number of publications of the researcher.
-	 * @return the number of publications of the researcher.
+	 * @return The number of publications of the researcher.
 	 */
 	int get_n_publications();
 
-	/*
+	/**
 	 * Returns the number of publications in journals of the researcher.
-	 * @return the number of publications in journals of the researcher.
+	 * @return The number of publications in journals of the researcher.
 	 */
 	int get_n_journals();
 
 	/**
 	 * Returns a list of publications in journals of the researcher.
-	 * @return a vector with the publications in journals of the researcher.
+	 * @return A vector with the publications in journals of the researcher.
 	 */
 	vector<string> get_journals();
 
 	/**
 	 * Returns the number of publications in events of the researcher.
-	 * @return the number of publications in events of the researcher.
+	 * @return The number of publications in events of the researcher.
 	 */
 	int get_n_events();
 
 	/**
 	 * Returns a list of publications in events of the researcher.
-	 * @return a vector with the publications in events of the researcher.
+	 * @return A vector with the publications in events of the researcher.
 	 */
 	vector<string> get_events();
 
-	virtual ~LDBRegister() {
-	}
-	;
+	/**
+	 * Default class destructor.
+	 */
+	virtual ~LDBRegister();
+
 };
 
 } /* namespace std */
+
 #endif /* LDBREGISTER_H_ */

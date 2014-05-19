@@ -38,6 +38,11 @@ public:
 	 */
 	unsigned int write(LDBRegister reg);
 
+	/**
+	 * Given the position of the register in file, reads and returns the register.
+	 * @param pos The position of the register in the file.
+	 * @return The register read from the file.
+	 */
 	LDBRegister read(unsigned int pos);
 
 	/**
@@ -45,6 +50,9 @@ public:
 	 */
 	void close();
 
+	/**
+	 * Default class destructor.
+	 */
 	virtual ~LDBSeqFile();
 };
 
