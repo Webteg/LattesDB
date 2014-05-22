@@ -20,7 +20,7 @@ class LDBSeqFile {
 
 	fstream file; /**< File handler */
 
-	const int SIZE_UINT = sizeof(unsigned int);
+	static const int SIZE_UINT = sizeof(unsigned int);
 	/**< Size of unsigned int constant */
 
 public:
