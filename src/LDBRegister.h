@@ -30,10 +30,9 @@ class LDBRegister {
 public:
 
 	/**
-	 * Creates a new register from a pugi::xml_document.
-	 * @param result The result of xml parsing.
+	 * Creates a new empty record.
 	 */
-	LDBRegister(pugi::xml_document doc);
+	LDBRegister();
 
 	/**
 	 * Creates a new register from parameters
@@ -44,6 +43,13 @@ public:
 	 */
 	LDBRegister(string name, string institution, vector<string> journals,
 			vector<string> events);
+
+	/**
+	* Loads attributes froma a xml-lattes file.
+	* @param file_name Name of the xml file to be opened.
+	* @return if success true, else false.
+	*/
+	bool readXML(string file_name);
 
 	/**
 	 * Returns the full name of the researcher.
