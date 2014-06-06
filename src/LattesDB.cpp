@@ -12,7 +12,6 @@ LattesDB::LattesDB(string file_name) {
 bool LattesDB::readXML(string dir_name) {
 	
 	bool flag;
-	LDBRegister *reg;
 	pugi::xml_document doc;
 	pugi::xml_parse_result result;
 	
@@ -25,9 +24,9 @@ bool LattesDB::readXML(string dir_name) {
 		while((entry = readdir(pDIR))){
 			if( strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0 ){
 
-				reg = new LDBRegister();
-				if(reg->readXML((std::string("xmlLattes/") + entry->d_name))) {
-					seqFile->write(*reg);
+				LDBRegister reg;
+				if(reg.readXML((std::string("xmlLattes/") + entry->d_name))) {
+					seqFile->write(reg);
 				} else {
 					flag = false;
 				}
