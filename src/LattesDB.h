@@ -24,7 +24,7 @@ public:
 	
 	LattesDB(string file_name);
 	
-	bool readXML(string dir_name);
+	bool readXMLDir(string dir_name);
 	
 	bool readXMLFile(string file_name);
 

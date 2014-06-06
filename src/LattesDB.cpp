@@ -9,7 +9,7 @@ LattesDB::LattesDB(string file_name) {
 
 }
 
-bool LattesDB::readXML(string dir_name) {
+bool LattesDB::readXMLDir(string dir_name) {
 	
 	bool flag;
 	pugi::xml_document doc;
