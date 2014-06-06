@@ -22,12 +22,11 @@ bool LattesDB::readXML(string dir_name) {
 	pDIR=opendir((std::string("./") + dir_name).c_str());
 	if(pDIR) {
 		flag = true;
-		while(entry = readdir(pDIR)){
+		while((entry = readdir(pDIR))){
 			if( strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0 ){
-				result = doc.load_file((std::string("xmlLattes/") + entry->d_name).c_str());
 
-				if(result) {
-					reg = new LDBRegister(doc);
+				reg = new LDBRegister();
+				if(reg->readXML((std::string("xmlLattes/") + entry->d_name))) {
 					seqFile->write(*reg);
 				} else {
 					flag = false;
@@ -45,15 +44,11 @@ bool LattesDB::readXML(string dir_name) {
 
 bool LattesDB::readXMLFile(string file_name) {
 
-	LDBRegister *reg;
-	pugi::xml_document doc;
-	pugi::xml_parse_result result;
 	bool flag;
-
-	result = doc.load_file(file_name.c_str());
-	if(result) {
+	LDBRegister *reg;
+	reg = new LDBRegister();
+	if(reg->readXML(file_name)) {
 		flag = true;
-		reg = new LDBRegister(doc);
 		seqFile->write(*reg);
 	} else {
 		flag = false;

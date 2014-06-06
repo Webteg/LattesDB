@@ -4,7 +4,7 @@
 
 #include "LDBSeqFile.h"
 #include "LDBRegister.h"
-#include "includes/pugixml.hpp"
+#include "../includes/pugixml.hpp"
 #include <fstream>
 #include <dirent.h>
 #include <iostream>
