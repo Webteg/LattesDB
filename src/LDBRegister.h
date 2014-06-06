@@ -10,7 +10,7 @@
 
 #include <string>
 #include <vector>
-#include "../includes/pugixml.hpp"
+#include "pugi/pugixml.hpp"
 
 namespace std {
 
