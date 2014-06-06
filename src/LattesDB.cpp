@@ -18,14 +18,14 @@ bool LattesDB::readXML(string dir_name) {
 	DIR *pDIR;
 	struct dirent *entry;
 	
-	pDIR=opendir((std::string("./") + dir_name).c_str());
+	pDIR=opendir((string("./") + dir_name).c_str());
 	if(pDIR) {
 		flag = true;
 		while((entry = readdir(pDIR))){
 			if( strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0 ){
 
 				LDBRegister reg;
-				if(reg.readXML((std::string("xmlLattes/") + entry->d_name))) {
+				if(reg.readXML((string("xmlLattes/") + entry->d_name))) {
 					seqFile->write(reg);
 				} else {
 					flag = false;
@@ -44,13 +44,14 @@ bool LattesDB::readXML(string dir_name) {
 bool LattesDB::readXMLFile(string file_name) {
 
 	bool flag;
-	LDBRegister *reg;
-	reg = new LDBRegister();
+	LDBRegister *reg = new LDBRegister;
+
 	if(reg->readXML(file_name)) {
 		flag = true;
 		seqFile->write(*reg);
+
 	} else {
-		flag = false;
+		//flag = false;
 	}
 
 	return flag;
