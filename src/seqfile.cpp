@@ -33,21 +33,11 @@ int main() {
 
 	cout << "Trying to read all entries:" << endl;
 
-	/*vector<LDBRegister> regs;
+	vector<LDBRegister> regs = file2.read_all();
 
 	for (LDBRegister v : regs) {
-		cout << v.get_name() << " - " << v.get_institution() << endl;
-		cout << "Total Pulications: " << v.get_n_publications() << endl;
-		cout << v.get_n_journals() << " Journal Publication(s): " << endl;
-		for (string s : v.get_journals()) {
-			cout << s << endl;
-		}
-		cout << endl;
-		cout << v.get_n_events() << " Event Publication(s): " << endl;
-		for (string s : v.get_events()) {
-			cout << s << endl;
-		}
-	}*/
+		cout << v.to_string();
+	}
 
 	file2.close();
 

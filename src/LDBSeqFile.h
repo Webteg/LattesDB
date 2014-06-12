@@ -23,6 +23,8 @@ class LDBSeqFile {
 	static const int SIZE_UINT = sizeof(unsigned int);
 	/**< Size of unsigned int constant */
 
+	static const int BUFFER_SIZE = 512;
+
 public:
 
 	/**
@@ -44,6 +46,8 @@ public:
 	 * @return The register read from the file.
 	 */
 	LDBRegister read(unsigned int pos);
+
+	vector<LDBRegister> read_all();
 
 	/**
 	 * Saves changes and closes the file.
