@@ -5,7 +5,11 @@ namespace std {
 
 LattesDB::LattesDB(string file_name) {
 
-	seqFile = new LDBSeqFile(file_name);
+	seqFile.open(file_name + ".sf");
+
+	//btree.open(file_name + ".bt");
+
+	//linkedlist.open(file_name + ".ll"); ...
 
 }
 
@@ -26,7 +30,7 @@ bool LattesDB::readXMLDir(string dir_name) {
 
 				LDBRegister reg;
 				if(reg.readXML((string("xmlLattes/") + entry->d_name))) {
-					seqFile->write(reg);
+					seqFile.write(reg);
 				} else {
 					flag = false;
 				}
@@ -48,7 +52,7 @@ bool LattesDB::readXMLFile(string file_name) {
 
 	if(reg->readXML(file_name)) {
 		flag = true;
-		seqFile->write(*reg);
+		seqFile.write(*reg);
 
 	} else {
 		//flag = false;
@@ -56,6 +60,10 @@ bool LattesDB::readXMLFile(string file_name) {
 
 	return flag;
 
+}
+
+vector<LDBRegister> LattesDB::get_all(){
+	return seqFile.read_all();
 }
 
 LattesDB::~LattesDB() {

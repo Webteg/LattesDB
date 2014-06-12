@@ -11,6 +11,10 @@
 
 namespace std {
 
+LDBSeqFile::LDBSeqFile() {
+
+}
+
 LDBSeqFile::LDBSeqFile(string file_name) {
 	file.open(file_name.c_str(), ios::in | ios::out | ios::binary);
 	if (!file.is_open()) {
@@ -19,6 +23,20 @@ LDBSeqFile::LDBSeqFile(string file_name) {
 	}
 	file.seekp(file.beg);
 	file.write("\0", 1); //makes sure position 0 is empty.
+}
+
+void LDBSeqFile::open(string file_name) {
+	file.open(file_name.c_str(), ios::in | ios::out | ios::binary);
+	if (!file.is_open()) {
+		file.open(file_name.c_str(),
+				ios::in | ios::out | ios::binary | ios::trunc);
+	}
+	file.seekp(file.beg);
+	file.write("\0", 1); //makes sure position 0 is empty.
+}
+
+bool LDBSeqFile::is_open(){
+	return file.is_open();
 }
 
 unsigned int LDBSeqFile::write(LDBRegister reg) {
@@ -148,7 +166,7 @@ vector<LDBRegister> LDBSeqFile::read_all() {
 			publication = buffer;
 			events.push_back(publication);
 		}
-		LDBRegister rec(name,institution,journals,events);
+		LDBRegister rec(name, institution, journals, events);
 		ret.push_back(rec);
 
 		file.peek();

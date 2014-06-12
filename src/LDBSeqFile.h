@@ -27,11 +27,17 @@ class LDBSeqFile {
 
 public:
 
+	LDBSeqFile();
+
 	/**
 	 * Open a .ldb file, if fails, creates a new one.
 	 * @param file_name Name of the file to be opened.
 	 */
 	LDBSeqFile(string file_name);
+
+	void open(string file_name);
+
+	bool is_open();
 
 	/**
 	 * Writes a register into the sequential file.

@@ -17,7 +17,7 @@ namespace std {
  */
 class LattesDB {
 
-	LDBSeqFile* seqFile; /* sequential file */
+	LDBSeqFile seqFile; /* sequential file */
 
 
 public:
@@ -27,6 +27,8 @@ public:
 	bool readXMLDir(string dir_name);
 	
 	bool readXMLFile(string file_name);
+
+	vector<LDBRegister> get_all();
 
 	virtual ~LattesDB();
 };

@@ -27,19 +27,19 @@ int main() {
 	file.close();
 
 	cout << "Trying to read the one just inserted:" << endl;
-	LDBSeqFile file2("test.ldb");
-	LDBRegister reg2 = file2.read(pos);
+	file.open("test.ldb");
+	LDBRegister reg2 = file.read(pos);
 	cout << reg2.to_string();
 
 	cout << "Trying to read all entries:" << endl;
 
-	vector<LDBRegister> regs = file2.read_all();
+	vector<LDBRegister> regs = file.read_all();
 
 	for (LDBRegister v : regs) {
 		cout << v.to_string();
 	}
 
-	file2.close();
+	file.close();
 
 	return 0;
 }
