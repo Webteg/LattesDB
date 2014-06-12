@@ -55,7 +55,7 @@ bool LattesDB::readXMLFile(string file_name) {
 		seqFile.write(*reg);
 
 	} else {
-		//flag = false;
+		flag = false;
 	}
 
 	return flag;
