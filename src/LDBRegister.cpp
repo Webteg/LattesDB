@@ -6,6 +6,7 @@
  */
 
 #include "LDBRegister.h"
+#include <sstream>
 
 namespace std {
 
@@ -21,12 +22,12 @@ LDBRegister::LDBRegister(string name, string institution,
 	this->events = events;
 }
 
-bool LDBRegister::readXML(string file_name){
+bool LDBRegister::readXML(string file_name) {
 	pugi::xml_document doc;
 	pugi::xml_parse_result result;
 	result = doc.load_file(file_name.c_str());
-	
-	if(result){
+
+	if (result) {
 		pugi::xml_node events_works = doc.child("CURRICULO-VITAE").child(
 				"PRODUCAO-BIBLIOGRAFICA").child("TRABALHOS-EM-EVENTOS");
 		pugi::xml_node journal_works = doc.child("CURRICULO-VITAE").child(
@@ -38,8 +39,8 @@ bool LDBRegister::readXML(string file_name){
 				doc.child("CURRICULO-VITAE").child("DADOS-GERAIS").child(
 						"ENDERECO-PROFISSIONAL").attribute(
 						"NOME_INSTITUICAO-EMPRESA").value();
-		for (pugi::xml_node work = journal_works.first_child(); work;
-				work = work.next_sibling()) {
+		for (pugi::xml_node work = journal_works.first_child(); work; work =
+				work.next_sibling()) {
 			journals.push_back(
 					work.child("DADOS-BASICOS-DO-TRABALHO").attribute(
 							"TITULO-DO-TRABALHO").value());
@@ -80,11 +81,29 @@ int LDBRegister::get_n_events() {
 	return events.size();
 }
 
+string LDBRegister::to_string() {
+	stringstream output;
+	output << name << " - " << institution << endl;
+	output << "Total Pulications: " << journals.size() + events.size() << endl;
+	output << journals.size() << " Journal Publication(s): " << endl;
+	for (string s : journals) {
+		output << s << endl;
+	}
+	output << endl;
+	output << events.size() << " Event Publication(s): " << endl;
+	for (string s : events) {
+		output << s << endl;
+	}
+	return output.str();
+}
+
 vector<string> LDBRegister::get_events() {
 	return events;
 }
 
-LDBRegister::~LDBRegister() {};
+LDBRegister::~LDBRegister() {
+}
+;
 
 }
 /* namespace std */

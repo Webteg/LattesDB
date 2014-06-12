@@ -93,6 +93,8 @@ public:
 	 */
 	vector<string> get_events();
 
+	string to_string();
+
 	/**
 	 * Default class destructor.
 	 */
