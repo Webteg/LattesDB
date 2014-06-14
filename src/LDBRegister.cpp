@@ -30,20 +30,23 @@ bool LDBRegister::readXML(string file_name) {
 	if (result) {
 		pugi::xml_node events_works = doc.child("CURRICULO-VITAE").child(
 				"PRODUCAO-BIBLIOGRAFICA").child("TRABALHOS-EM-EVENTOS");
+
 		pugi::xml_node journal_works = doc.child("CURRICULO-VITAE").child(
 				"PRODUCAO-BIBLIOGRAFICA").child("ARTIGOS-PUBLICADOS");
 
 		name = doc.child("CURRICULO-VITAE").child("DADOS-GERAIS").attribute(
 				"NOME-COMPLETO").value();
+
 		institution =
 				doc.child("CURRICULO-VITAE").child("DADOS-GERAIS").child(
 						"ENDERECO-PROFISSIONAL").attribute(
 						"NOME_INSTITUICAO-EMPRESA").value();
+
 		for (pugi::xml_node work = journal_works.first_child(); work; work =
 				work.next_sibling()) {
 			journals.push_back(
-					work.child("DADOS-BASICOS-DO-TRABALHO").attribute(
-							"TITULO-DO-TRABALHO").value());
+					work.child("DADOS-BASICOS-DO-ARTIGO").attribute(
+							"TITULO-DO-ARTIGO").value());
 		}
 		for (pugi::xml_node work = events_works.first_child(); work;
 				work = work.next_sibling()) {
@@ -94,6 +97,7 @@ string LDBRegister::to_string() {
 	for (string s : events) {
 		output << s << endl;
 	}
+	output << "////////////////////////////////////////////////////////////" << endl;
 	return output.str();
 }
 
