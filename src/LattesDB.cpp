@@ -25,7 +25,7 @@ bool LattesDB::readXMLDir(string dir_name) {
 	pDIR=opendir((string("./") + dir_name).c_str());
 	if(pDIR) {
 		flag = true;
-		while((entry = readdir(pDIR) && flag == true)){
+		while((entry = readdir(pDIR)) && flag == true){
 			if( strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, ".." ) != 0 ){
 
 				LDBRegister reg;
