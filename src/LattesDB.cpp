@@ -3,15 +3,15 @@
 namespace std {
 
 LattesDB::LattesDB(string file_name) {
-	name = file_name;
+	db_name = file_name;
 
-	seqFile.open(name + ".sf");
+	seqFile.open(db_name + ".sf");
 
-	linkFile.open(name + ".ll");
+	linkFile.open(db_name + ".ll");
 
-	namePrefix.read(name + ".npt");
+	namePrefix.read(db_name + ".npt");
 
-	institutionPrefix.read(name + ".ipt");
+	institutionPrefix.read(db_name + ".ipt");
 }
 
 bool LattesDB::readXMLDir(string dir_name) {
@@ -32,12 +32,12 @@ bool LattesDB::readXMLDir(string dir_name) {
 
 				LDBRegister reg;
 				if (reg.readXML((string("xmlLattes/") + entry->d_name))) {
-					string name = reg.get_name();
+					string name = utfToAscii(reg.get_name());
 					unsigned long int find = namePrefix.get(name);
 					if (find == 0) {
 						unsigned long int pos = seqFile.write(reg);
 						namePrefix.insert(name, pos);
-						string institution = reg.get_institution();
+						string institution = utfToAscii(reg.get_institution());
 						unsigned long int list = institutionPrefix.get(
 								institution);
 						if (list == 0) {
@@ -92,6 +92,7 @@ bool LattesDB::readXMLFile(string file_name) {
 }
 
 vector<LDBRegister> LattesDB::get_by_institution_full(string institution) {
+	institution = utfToAscii(institution);
 	vector<LDBRegister> ret;
 	unsigned long int pos = institutionPrefix.get(institution);
 	if (pos != 0) {
@@ -104,9 +105,11 @@ vector<LDBRegister> LattesDB::get_by_institution_full(string institution) {
 }
 
 vector<LDBRegister> LattesDB::get_by_institution_prefix(string institution) {
+	institution = utfToAscii(institution);
 	vector<LDBRegister> ret;
-	vector<unsigned long int> posList = institutionPrefix.getPrefix(institution);
-	for(unsigned long int pos : posList){
+	vector<unsigned long int> posList = institutionPrefix.getPrefix(
+			institution);
+	for (unsigned long int pos : posList) {
 		if (pos != 0) {
 			vector<unsigned long int> addressList = linkFile.getList(pos);
 			for (unsigned long int address : addressList) {
@@ -118,6 +121,7 @@ vector<LDBRegister> LattesDB::get_by_institution_prefix(string institution) {
 }
 
 LDBRegister LattesDB::get_by_name_full(string name) {
+	name = utfToAscii(name);
 	unsigned long int address = namePrefix.get(name);
 	if (address != 0)
 		return seqFile.read(address);
@@ -126,6 +130,7 @@ LDBRegister LattesDB::get_by_name_full(string name) {
 }
 
 vector<LDBRegister> LattesDB::get_by_name_prefix(string name) {
+	name = utfToAscii(name);
 	vector<LDBRegister> ret;
 	vector<unsigned long int> addressList = namePrefix.getPrefix(name);
 	for (unsigned long int address : addressList) {
@@ -138,11 +143,42 @@ vector<LDBRegister> LattesDB::get_all() {
 	return seqFile.read_all();
 }
 
+string LattesDB::utfToAscii(string str) {
+	string new_str;
+	unsigned int size = str.size();
+	for (unsigned int i = 0; i < size; i++) {
+		if (str[i] < 0) {
+			i++;
+			if ((str[i] >= -128 && str[i] <= -123)
+					|| (str[i] >= -96 && str[i] <= -91)) {
+				new_str.push_back('A');
+			} else if ((str[i] >= -120 && str[i] <= -117)
+					|| (str[i] >= -88 && str[i] <= -85)) {
+				new_str.push_back('E');
+			} else if ((str[i] >= -116 && str[i] <= -113)
+					|| (str[i] >= -84 && str[i] <= -81)) {
+				new_str.push_back('I');
+			} else if ((str[i] >= -110 && str[i] <= -106)
+					|| (str[i] >= -78 && str[i] <= -74)) {
+				new_str.push_back('O');
+			} else if ((str[i] >= -103 && str[i] <= -100)
+					|| (str[i] >= -71 && str[i] <= -68)) {
+				new_str.push_back('U');
+			} else if (str[i] == -89 || new_str[i] == -121) {
+				new_str.push_back('C');
+			}
+		} else {
+			new_str.push_back(toupper(str[i]));
+		}
+	}
+	return new_str;
+}
+
 void LattesDB::close() {
 	seqFile.close();
 	linkFile.close();
-	namePrefix.write(name + ".npt");
-	institutionPrefix.write(name + ".ipt");
+	namePrefix.write(db_name + ".npt");
+	institutionPrefix.write(db_name + ".ipt");
 }
 
 LattesDB::~LattesDB() {

@@ -26,7 +26,7 @@ namespace std {
  */
 class LattesDB {
 
-	string name;
+	string db_name;
 
 	LDBSeqFile seqFile; /* sequential file */
 
@@ -52,6 +52,8 @@ public:
 	vector<LDBRegister> get_by_institution_prefix(string institution);
 
 	vector<LDBRegister> get_all();
+
+	static string utfToAscii(string str);
 
 	void close();
 
