@@ -37,8 +37,8 @@ public:
 
 	vector<Trienode*> getChildren() {
 		vector<Trienode*> ret;
-		map<char, Trienode*>::iterator it = children.begin();
-		while (it != children.end()) {
+		map<char, Trienode*>::reverse_iterator it = children.rbegin();
+		while (it != children.rend()) {
 			ret.push_back(it->second);
 			it++;
 		}
@@ -47,8 +47,8 @@ public:
 
 	vector<pair<char, Trienode*> > getEdges() {
 		vector<pair<char, Trienode*> > ret;
-		map<char, Trienode*>::iterator it = children.begin();
-		while (it != children.end()) {
+		map<char, Trienode*>::reverse_iterator it = children.rbegin();
+		while (it != children.rend()) {
 			ret.push_back(*it);
 			it++;
 		}

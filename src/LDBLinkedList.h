@@ -15,12 +15,15 @@ namespace std {
 
 class LDBLinkedList {
 	fstream file;
-	static const int SIZE_UINT = sizeof(unsigned int);
+	static const int SIZE_ULINT = sizeof(unsigned long int);
 public:
+	LDBLinkedList();
 	LDBLinkedList(string file_name);
-	unsigned int newList(unsigned int val, unsigned int next = 0);
-	void addToList (unsigned int val, unsigned int list);
-	vector<unsigned int> getList (unsigned int list);
+	void open(string file_name);
+	bool is_open();
+	unsigned long int newList(unsigned long int val, unsigned long int next = 0);
+	void addToList (unsigned long int val, unsigned long int list);
+	vector<unsigned long int> getList (unsigned long int list);
 	void close();
 	virtual ~LDBLinkedList();
 };

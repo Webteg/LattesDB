@@ -44,14 +44,14 @@ public:
 	 * @param reg A register to be written on disk.
 	 * @return The position of the register written on the file.
 	 */
-	unsigned int write(LDBRegister reg);
+	unsigned long int write(LDBRegister reg);
 
 	/**
 	 * Given the position of the register in file, reads and returns the register.
 	 * @param pos The position of the register in the file.
 	 * @return The register read from the file.
 	 */
-	LDBRegister read(unsigned int pos);
+	LDBRegister read(unsigned long int pos);
 
 	vector<LDBRegister> read_all();
 

@@ -8,9 +8,8 @@
 #ifndef TRIE_H_
 #define TRIE_H_
 #include "trienode.h"
-#include <iostream>
 #include <vector>
-#include <queue>
+#include <stack>
 #include <fstream>
 #include <utility>
 
@@ -29,7 +28,6 @@ public:
 	void insert(string key, unsigned long int t) {
 		unsigned int k = 0;
 		Trienode *x = root;
-		int key_size = key.size();
 		while (!x->isLeaf() && k < key.size()) {
 			char c = key[k++];
 			Trienode* y = x->getChild(c);
@@ -40,7 +38,6 @@ public:
 			x = y;
 		}
 		while (k < key.size()) {
-			char c = key[k];
 			Trienode* y = new Trienode();
 			x->putChild(key[k++], y);
 			x = y;
@@ -73,10 +70,10 @@ public:
 			}
 			x = x->getChild(key[i++]);
 		}
-		queue<Trienode*> s;
+		stack<Trienode*> s;
 		s.push(x);
 		while (!s.empty()) {
-			x = s.front();
+			x = s.top();
 			s.pop();
 			if (!x->isEmpty()) {
 				v.push_back(x->getItem());
@@ -90,12 +87,12 @@ public:
 	}
 
 	void write(string file_name) {
-		fstream file(file_name.c_str(), fstream::out | fstream::trunc);
+		fstream file(file_name.c_str(), ios::out | ios::binary);
 		file.write((char*) &size, sizeof(size));
-		queue<pair<string, Trienode*> > s;
+		stack<pair<string, Trienode*> > s;
 		s.push(make_pair("", root));
 		while (!s.empty()) {
-			pair<string, Trienode*> p = s.front();
+			pair<string, Trienode*> p = s.top();
 			Trienode* x = p.second;
 			string key = p.first;
 			s.pop();
@@ -111,10 +108,11 @@ public:
 				s.push(make_pair(key + edges[i].first, edges[i].second));
 			}
 		}
+		file.close();
 	}
 
 	void read(string file_name) {
-		fstream file(file_name.c_str(), fstream::in);
+		fstream file(file_name.c_str(), ios::in | ios::binary);
 		if (file.is_open()) {
 			unsigned int file_size;
 			char buffer[512];
@@ -127,19 +125,18 @@ public:
 				file.read(buffer, str_size);
 				buffer[str_size] = '\0';
 				string key = string(buffer);
-				cout << buffer << endl;
 				insert(key, item);
 			}
-			file.read(buffer, 512);
 		}
+		file.close();
 	}
 
 	virtual ~Trie() {
-		queue<Trienode*> s;
+		stack<Trienode*> s;
 		Trienode* x = root;
 		s.push(x);
 		while (!s.empty()) {
-			x = s.front();
+			x = s.top();
 			s.pop();
 			vector<Trienode*> nodes = x->getChildren();
 			delete x;
