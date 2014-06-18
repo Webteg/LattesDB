@@ -14,6 +14,48 @@ LattesDB::LattesDB(string file_name) {
 	institutionPrefix.read(db_name + ".ipt");
 }
 
+// reg1.get_name() > reg2.get_name()
+bool LattesDB::cmp_reg_name(LDBRegister reg1, LDBRegister reg2) {
+	if(reg1.get_name().compare(reg2.get_name()) > 0) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+// reg1.get_name() < reg2.get_name()
+bool LattesDB::cmp_reg_name_reverse(LDBRegister reg1, LDBRegister reg2) {
+	if(reg1.get_name().compare(reg2.get_name()) < 0) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool LattesDB::cmp_reg_publications(LDBRegister reg1, LDBRegister reg2) {
+	return (reg1.get_n_publications() > reg2.get_n_publications());
+}
+
+bool LattesDB::cmp_reg_publications_reverse(LDBRegister reg1, LDBRegister reg2) {
+	return (reg1.get_n_publications() < reg2.get_n_publications());
+}
+
+bool LattesDB::cmp_reg_journals(LDBRegister reg1, LDBRegister reg2) {
+	return (reg1.get_n_journals() > reg2.get_n_journals());
+}
+
+bool LattesDB::cmp_reg_journals_reverse(LDBRegister reg1, LDBRegister reg2) {
+	return (reg1.get_n_journals() < reg2.get_n_journals());
+}
+
+bool LattesDB::cmp_reg_events(LDBRegister reg1, LDBRegister reg2) {
+	return (reg1.get_n_events() > reg2.get_n_events());
+}
+
+bool LattesDB::cmp_reg_events_reverse(LDBRegister reg1, LDBRegister reg2) {
+	return (reg1.get_n_events() < reg2.get_n_events());
+}
+
 bool LattesDB::readXMLDir(string dir_name) {
 
 	bool flag;

@@ -55,6 +55,26 @@ public:
 
 	static string utfToAscii(string str);
 
+	// reg1 > reg2
+	bool cmp_reg_name(LDBRegister reg1, LDBRegister reg2);
+
+	// reg1 < reg2
+	bool cmp_reg_name_reverse(LDBRegister reg1, LDBRegister reg2);
+
+	// reg1 > reg2
+	bool cmp_reg_publications(LDBRegister reg1, LDBRegister reg2);
+
+	// reg1 < reg2
+	bool cmp_reg_publications_reverse(LDBRegister reg1, LDBRegister reg2);
+
+	bool cmp_reg_journals(LDBRegister reg1, LDBRegister reg2);
+
+	bool cmp_reg_journals_reverse(LDBRegister reg1, LDBRegister reg2);
+
+	bool cmp_reg_events(LDBRegister reg1, LDBRegister reg2);
+
+	bool cmp_reg_events_reverse(LDBRegister reg1, LDBRegister reg2);
+
 	void close();
 
 	virtual ~LattesDB();
