@@ -70,8 +70,6 @@ public:
 
 	vector<LDBRegister> get_all(SortOrder sorting = NO_ORDER);
 
-	static string utfToAscii(string str);
-
 	// reg1 > reg2
 	static bool cmp_reg_name( LDBRegister reg1,  LDBRegister reg2);
 
