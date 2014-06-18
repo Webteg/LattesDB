@@ -64,6 +64,10 @@ string LDBRegister::get_name() {
 	return name;
 }
 
+vector<int> get_coauthors() {
+	return coauthors;
+}
+
 string LDBRegister::get_institution() {
 	return institution;
 }
