@@ -38,9 +38,9 @@ bool LDBRegister::readXML(string file_name) {
 				"NOME-COMPLETO").value();
 
 		institution =
-				doc.child("CURRICULO-VITAE").child("DADOS-GERAIS").child(
+				doc.child("CURRICULO-VITAE").child("DADOS-GERAIS").child("ENDERECO").child(
 						"ENDERECO-PROFISSIONAL").attribute(
-						"NOME_INSTITUICAO-EMPRESA").value();
+						"NOME-INSTITUICAO-EMPRESA").value();
 
 		for (pugi::xml_node work = journal_works.first_child(); work; work =
 				work.next_sibling()) {

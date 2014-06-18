@@ -39,9 +39,9 @@ bool LDBSeqFile::is_open(){
 	return file.is_open();
 }
 
-unsigned int LDBSeqFile::write(LDBRegister reg) {
+unsigned long int LDBSeqFile::write(LDBRegister reg) {
 	file.seekp(0, file.end);
-	unsigned int ret = file.tellp();
+	unsigned long int ret = file.tellp();
 	unsigned int size;
 	string element;
 	vector<string> vec;
@@ -81,7 +81,7 @@ unsigned int LDBSeqFile::write(LDBRegister reg) {
 	return ret;
 }
 
-LDBRegister LDBSeqFile::read(unsigned int pos) {
+LDBRegister LDBSeqFile::read(unsigned long int pos) {
 	file.seekg(pos);
 	string name;
 	string institution;
@@ -126,7 +126,6 @@ LDBRegister LDBSeqFile::read(unsigned int pos) {
 
 vector<LDBRegister> LDBSeqFile::read_all() {
 	vector<LDBRegister> ret;
-	unsigned int next = 1;
 	file.seekg(1, file.beg);
 	file.peek();
 	while (file.good()) {
