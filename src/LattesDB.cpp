@@ -15,8 +15,8 @@ LattesDB::LattesDB(string file_name) {
 }
 
 // reg1.get_name() > reg2.get_name()
-bool LattesDB::cmp_reg_name(LDBRegister reg1, LDBRegister reg2) {
-	if(reg1.get_name().compare(reg2.get_name()) > 0) {
+bool LattesDB::cmp_reg_name_reverse(LDBRegister reg1, LDBRegister reg2) {
+	if (utfToAscii(reg1.get_name()).compare(utfToAscii(reg2.get_name())) > 0) {
 		return true;
 	} else {
 		return false;
@@ -24,35 +24,36 @@ bool LattesDB::cmp_reg_name(LDBRegister reg1, LDBRegister reg2) {
 }
 
 // reg1.get_name() < reg2.get_name()
-bool LattesDB::cmp_reg_name_reverse(LDBRegister reg1, LDBRegister reg2) {
-	if(reg1.get_name().compare(reg2.get_name()) < 0) {
+bool LattesDB::cmp_reg_name(LDBRegister reg1, LDBRegister reg2) {
+	if (utfToAscii(reg1.get_name()).compare(utfToAscii(reg2.get_name())) < 0) {
 		return true;
 	} else {
 		return false;
 	}
 }
 
-bool LattesDB::cmp_reg_publications(LDBRegister reg1, LDBRegister reg2) {
+bool LattesDB::cmp_reg_publications_reverse(LDBRegister reg1, LDBRegister reg2) {
 	return (reg1.get_n_publications() > reg2.get_n_publications());
 }
 
-bool LattesDB::cmp_reg_publications_reverse(LDBRegister reg1, LDBRegister reg2) {
+bool LattesDB::cmp_reg_publications(LDBRegister reg1,
+		LDBRegister reg2) {
 	return (reg1.get_n_publications() < reg2.get_n_publications());
 }
 
-bool LattesDB::cmp_reg_journals(LDBRegister reg1, LDBRegister reg2) {
+bool LattesDB::cmp_reg_journals_reverse(LDBRegister reg1, LDBRegister reg2) {
 	return (reg1.get_n_journals() > reg2.get_n_journals());
 }
 
-bool LattesDB::cmp_reg_journals_reverse(LDBRegister reg1, LDBRegister reg2) {
+bool LattesDB::cmp_reg_journals(LDBRegister reg1, LDBRegister reg2) {
 	return (reg1.get_n_journals() < reg2.get_n_journals());
 }
 
-bool LattesDB::cmp_reg_events(LDBRegister reg1, LDBRegister reg2) {
+bool LattesDB::cmp_reg_events_reverse(LDBRegister reg1, LDBRegister reg2) {
 	return (reg1.get_n_events() > reg2.get_n_events());
 }
 
-bool LattesDB::cmp_reg_events_reverse(LDBRegister reg1, LDBRegister reg2) {
+bool LattesDB::cmp_reg_events(LDBRegister reg1, LDBRegister reg2) {
 	return (reg1.get_n_events() < reg2.get_n_events());
 }
 
@@ -128,12 +129,10 @@ bool LattesDB::readXMLFile(string file_name) {
 	} else {
 		flag = false;
 	}
-
 	return flag;
-
 }
 
-vector<LDBRegister> LattesDB::get_by_institution_full(string institution) {
+vector<LDBRegister> LattesDB::get_by_institution_full(string institution, SortOrder sorting) {
 	institution = utfToAscii(institution);
 	vector<LDBRegister> ret;
 	unsigned long int pos = institutionPrefix.get(institution);
@@ -143,10 +142,11 @@ vector<LDBRegister> LattesDB::get_by_institution_full(string institution) {
 			ret.push_back(seqFile.read(address));
 		}
 	}
+	sort(ret.begin(), ret.end(), sorting);
 	return ret;
 }
 
-vector<LDBRegister> LattesDB::get_by_institution_prefix(string institution) {
+vector<LDBRegister> LattesDB::get_by_institution_prefix(string institution, SortOrder sorting) {
 	institution = utfToAscii(institution);
 	vector<LDBRegister> ret;
 	vector<unsigned long int> posList = institutionPrefix.getPrefix(
@@ -159,6 +159,7 @@ vector<LDBRegister> LattesDB::get_by_institution_prefix(string institution) {
 			}
 		}
 	}
+	sort(ret.begin(), ret.end(), sorting);
 	return ret;
 }
 
@@ -171,18 +172,23 @@ LDBRegister LattesDB::get_by_name_full(string name) {
 	return reg;
 }
 
-vector<LDBRegister> LattesDB::get_by_name_prefix(string name) {
+vector<LDBRegister> LattesDB::get_by_name_prefix(string name,
+		SortOrder sorting) {
 	name = utfToAscii(name);
 	vector<LDBRegister> ret;
 	vector<unsigned long int> addressList = namePrefix.getPrefix(name);
 	for (unsigned long int address : addressList) {
 		ret.push_back(seqFile.read(address));
 	}
+	sort(ret.begin(), ret.end(), sorting);
 	return ret;
 }
 
-vector<LDBRegister> LattesDB::get_all() {
-	return seqFile.read_all();
+vector<LDBRegister> LattesDB::get_all(SortOrder sorting) {
+	vector<LDBRegister> ret;
+	ret = seqFile.read_all();
+	sort(ret.begin(), ret.end(), sorting);
+	return ret;
 }
 
 string LattesDB::utfToAscii(string str) {
@@ -214,6 +220,35 @@ string LattesDB::utfToAscii(string str) {
 		}
 	}
 	return new_str;
+}
+
+void LattesDB::sort(vector<LDBRegister>::iterator begin,
+		vector<LDBRegister>::iterator end, SortOrder sorting) {
+	switch (sorting) {
+	case BY_ALPHABETICAL_ORDER:
+		stable_sort(begin, end, cmp_reg_name);
+		break;
+	case BY_ALPHABETICAL_ORDER_REV:
+		stable_sort(begin, end, cmp_reg_name_reverse);
+		break;
+	case BY_N_PUBLICATIONS:
+		stable_sort(begin, end, cmp_reg_publications);
+		break;
+	case BY_N_PUBLICATIONS_REV:
+		stable_sort(begin, end, cmp_reg_publications_reverse);
+		break;
+	case BY_N_JOURNALS:
+		stable_sort(begin, end, cmp_reg_journals);
+		break;
+	case BY_N_JOURNALS_REV:
+		stable_sort(begin, end, cmp_reg_journals_reverse);
+		break;
+	case BY_N_EVENTS:
+		stable_sort(begin, end, cmp_reg_events);
+		break;
+	case BY_N_EVENTS_REV:
+		stable_sort(begin, end, cmp_reg_events_reverse);
+	}
 }
 
 void LattesDB::close() {

@@ -72,19 +72,19 @@ string LDBRegister::get_institution() {
 	return institution;
 }
 
-int LDBRegister::get_n_publications() {
+int LDBRegister::get_n_publications()  {
 	return journals.size() + events.size();
 }
 
-int LDBRegister::get_n_journals() {
+int LDBRegister::get_n_journals()  {
 	return journals.size();
 }
 
-vector<string> LDBRegister::get_journals() {
+vector<string> LDBRegister::get_journals()  {
 	return journals;
 }
 
-int LDBRegister::get_n_events() {
+int LDBRegister::get_n_events()  {
 	return events.size();
 }
 
@@ -105,7 +105,7 @@ string LDBRegister::to_string() {
 	return output.str();
 }
 
-vector<string> LDBRegister::get_events() {
+vector<string> LDBRegister::get_events()  {
 	return events;
 }
 
