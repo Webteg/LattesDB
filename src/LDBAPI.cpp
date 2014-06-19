@@ -31,12 +31,14 @@ void LDBAPI::mainMenu() {
 	cbreak();
 	noecho();
 	keypad(stdscr, TRUE);
-	init_pair(1, COLOR_RED, COLOR_BLACK);
 
 	/* Create items */
 	main_menu_items = new ITEM*[main_options_size];
-	for (i = 0; i < main_options_size; ++i)
+	for (i = 0; i < main_options_size; ++i) {
 		main_menu_items[i] = new_item(main_options[i].c_str(), "\0");
+	}
+	int op0 = 0, op1 = 1, op2 = 2, op3 = 3, op4 = 4;
+	set_item_userptr(main_menu_items[0], (void*) &op0);
 
 	/* Create menu */
 	main_menu = new_menu((ITEM **) main_menu_items);
@@ -58,7 +60,7 @@ void LDBAPI::mainMenu() {
 	post_menu(main_menu);
 	wrefresh(main_menu_win);
 
-	while ((c = wgetch(main_menu_win)) != KEY_F(1)) {
+	while ((c = wgetch(main_menu_win)) != KEY_F(2)) {
 		switch (c) {
 		case KEY_DOWN:
 			menu_driver(main_menu, REQ_DOWN_ITEM);
@@ -66,7 +68,22 @@ void LDBAPI::mainMenu() {
 		case KEY_UP:
 			menu_driver(main_menu, REQ_UP_ITEM);
 			break;
+		case 10:
+			int option = *((int*) item_userptr(current_item(main_menu)));
+			mvaddch(0, 0, option);
+			refresh();
+			switch (option) {
+			case 0:
+				addXMLMenu();
+				wrefresh(main_menu_win);
+			}
+			box(main_menu_win, 0, 0);
+			mvprintw(2, 4, "Lattes Database");
+			post_menu(main_menu);
+			pos_menu_cursor(main_menu);
+			break;
 		}
+		refresh();
 		wrefresh(main_menu_win);
 	}
 
@@ -75,6 +92,29 @@ void LDBAPI::mainMenu() {
 	free_menu(main_menu);
 	for (i = 0; i < main_options_size; ++i)
 		free_item(main_menu_items[i]);
+	endwin();
+}
+
+void LDBAPI::addXMLMenu() {
+	WINDOW* addXMLWin;
+	char buffer[512];
+	addXMLWin = newwin(LINES, COLS, 0, 0);
+	echo();
+	mvwprintw(addXMLWin, 5, 10, "Digite o nome do arquivo XML:");
+	mvwscanw(addXMLWin, 6, 10, buffer);
+	noecho();
+	string file_name = buffer;
+	wrefresh(addXMLWin);
+	wclear(addXMLWin);
+	//função
+	mvwprintw(addXMLWin, 5, 10, "Arquivo inserido com sucesso!");
+	mvwprintw(addXMLWin, 6, 6, "Pressione qualquer tecla para continuar");
+	wrefresh(addXMLWin);
+	wgetch(addXMLWin);
+	wclear(addXMLWin);
+	wrefresh(addXMLWin);
+	delwin(addXMLWin);
+	endwin();
 	endwin();
 }
 
