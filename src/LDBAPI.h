@@ -17,6 +17,7 @@ class LDBAPI {
 public:
 	LDBAPI(string name);
 	void mainMenu();
+	void searchMenu();
 	virtual ~LDBAPI();
 };
 

@@ -58,15 +58,16 @@ void LDBAPI::mainMenu() {
 	post_menu(main_menu);
 	wrefresh(main_menu_win);
 
-	while ((c = wgetch(main_menu_win)) != KEY_F(1)) {
+	while ((c = wgetch(main_menu_win)) != KEY_F(2)) {
 		switch (c) {
-		case KEY_DOWN:
-			menu_driver(main_menu, REQ_DOWN_ITEM);
-			break;
-		case KEY_UP:
-			menu_driver(main_menu, REQ_UP_ITEM);
-			break;
+			case KEY_DOWN:
+				menu_driver(main_menu, REQ_DOWN_ITEM);
+				break;
+			case KEY_UP:
+				menu_driver(main_menu, REQ_UP_ITEM);
+				break;
 		}
+
 		wrefresh(main_menu_win);
 	}
 
@@ -76,6 +77,23 @@ void LDBAPI::mainMenu() {
 	for (i = 0; i < main_options_size; ++i)
 		free_item(main_menu_items[i]);
 	endwin();
+}
+
+void LDBAPI::searchMenu() {
+	char mesg[]="Enter a string: ";		/* message to be appeared on the screen */
+	char str[80];
+	int row,col;				/* to store the number of rows and *
+					 * the number of colums of the screen */
+
+	//initscr();				/* start the curses mode */
+	 getmaxyx(stdscr,row,col);		/* get the number of rows and columns */
+	 mvprintw(0,0,"%s",mesg);
+	                     		/* print the message at the center of the screen */
+	 getstr(str);
+	 lattes.get_all();
+	 mvprintw(LINES - 2, 0, "You Entered: %s", str);
+	 getch();
+	 endwin();
 }
 
 LDBAPI::~LDBAPI() {
