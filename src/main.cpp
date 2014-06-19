@@ -13,11 +13,11 @@
 
 using namespace std;
 
-int main()
-{
-	LDBAPI api("Lattes");
-	api.mainMenu();
-	//api.addXMLMenu();
+int main() {
+
+		LDBAPI api("Lattes");
+		api.mainMenu();
+		//api.addXMLMenu();
 }
 
 #endif

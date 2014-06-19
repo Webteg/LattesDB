@@ -10,6 +10,8 @@
 
 #include <string>
 #include "LattesDB.h"
+#include "LDBRegister.h"
+#include <vector>
 
 namespace std {
 
@@ -20,9 +22,10 @@ public:
 	void mainMenu();
 
 	void showRegisterData(LDBRegister reg);
-
 	void addXMLMenu();
-
+	void addXML();
+	void addDir();
+	void printResults(vector<LDBRegister>);
 	virtual ~LDBAPI();
 };
 
