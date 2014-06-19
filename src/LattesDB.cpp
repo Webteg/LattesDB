@@ -16,28 +16,20 @@ LattesDB::LattesDB(string file_name) {
 
 // reg1.get_name() > reg2.get_name()
 bool LattesDB::cmp_reg_name_reverse(LDBRegister reg1, LDBRegister reg2) {
-	if (utfToAscii(reg1.get_name()).compare(utfToAscii(reg2.get_name())) > 0) {
-		return true;
-	} else {
-		return false;
-	}
+	return reg1.get_key() > reg2.get_key();
 }
 
 // reg1.get_name() < reg2.get_name()
 bool LattesDB::cmp_reg_name(LDBRegister reg1, LDBRegister reg2) {
-	if (utfToAscii(reg1.get_name()).compare(utfToAscii(reg2.get_name())) < 0) {
-		return true;
-	} else {
-		return false;
-	}
+	return reg1.get_key() < reg2.get_key();
 }
 
-bool LattesDB::cmp_reg_publications_reverse(LDBRegister reg1, LDBRegister reg2) {
+bool LattesDB::cmp_reg_publications_reverse(LDBRegister reg1,
+		LDBRegister reg2) {
 	return (reg1.get_n_publications() > reg2.get_n_publications());
 }
 
-bool LattesDB::cmp_reg_publications(LDBRegister reg1,
-		LDBRegister reg2) {
+bool LattesDB::cmp_reg_publications(LDBRegister reg1, LDBRegister reg2) {
 	return (reg1.get_n_publications() < reg2.get_n_publications());
 }
 
@@ -75,12 +67,13 @@ bool LattesDB::readXMLDir(string dir_name) {
 
 				LDBRegister reg;
 				if (reg.readXML((string("xmlLattes/") + entry->d_name))) {
-					string name = utfToAscii(reg.get_name());
+					string name = reg.get_key();
 					unsigned long int find = namePrefix.get(name);
 					if (find == 0) {
 						unsigned long int pos = seqFile.write(reg);
 						namePrefix.insert(name, pos);
-						string institution = utfToAscii(reg.get_institution());
+						string institution = LDBRegister::utfToAscii(
+								reg.get_institution());
 						unsigned long int list = institutionPrefix.get(
 								institution);
 						if (list == 0) {
@@ -132,8 +125,9 @@ bool LattesDB::readXMLFile(string file_name) {
 	return flag;
 }
 
-vector<LDBRegister> LattesDB::get_by_institution_full(string institution, SortOrder sorting) {
-	institution = utfToAscii(institution);
+vector<LDBRegister> LattesDB::get_by_institution_full(string institution,
+		SORTING_ORDER sorting) {
+	institution = LDBRegister::utfToAscii(institution);
 	vector<LDBRegister> ret;
 	unsigned long int pos = institutionPrefix.get(institution);
 	if (pos != 0) {
@@ -142,12 +136,13 @@ vector<LDBRegister> LattesDB::get_by_institution_full(string institution, SortOr
 			ret.push_back(seqFile.read(address));
 		}
 	}
-	sort(ret.begin(), ret.end(), sorting);
+	sortLDBRegister(ret.begin(), ret.end(), sorting);
 	return ret;
 }
 
-vector<LDBRegister> LattesDB::get_by_institution_prefix(string institution, SortOrder sorting) {
-	institution = utfToAscii(institution);
+vector<LDBRegister> LattesDB::get_by_institution_prefix(string institution,
+		SORTING_ORDER sorting) {
+	institution = LDBRegister::utfToAscii(institution);
 	vector<LDBRegister> ret;
 	vector<unsigned long int> posList = institutionPrefix.getPrefix(
 			institution);
@@ -159,12 +154,12 @@ vector<LDBRegister> LattesDB::get_by_institution_prefix(string institution, Sort
 			}
 		}
 	}
-	sort(ret.begin(), ret.end(), sorting);
+	sortLDBRegister(ret.begin(), ret.end(), sorting);
 	return ret;
 }
 
 LDBRegister LattesDB::get_by_name_full(string name) {
-	name = utfToAscii(name);
+	name = LDBRegister::utfToAscii(name);
 	unsigned long int address = namePrefix.get(name);
 	if (address != 0)
 		return seqFile.read(address);
@@ -173,57 +168,79 @@ LDBRegister LattesDB::get_by_name_full(string name) {
 }
 
 vector<LDBRegister> LattesDB::get_by_name_prefix(string name,
-		SortOrder sorting) {
-	name = utfToAscii(name);
+		SORTING_ORDER sorting) {
+	name = LDBRegister::utfToAscii(name);
 	vector<LDBRegister> ret;
 	vector<unsigned long int> addressList = namePrefix.getPrefix(name);
 	for (unsigned long int address : addressList) {
 		ret.push_back(seqFile.read(address));
 	}
-	sort(ret.begin(), ret.end(), sorting);
+	sortLDBRegister(ret.begin(), ret.end(), sorting);
 	return ret;
 }
 
-vector<LDBRegister> LattesDB::get_all(SortOrder sorting) {
+vector<LDBRegister> LattesDB::get_by_name_and_institution_prefix(string name,
+		string institution, SORTING_ORDER sorting) {
+	vector<LDBRegister> result_1 = get_by_name_prefix(name, sorting);
+	vector<LDBRegister> result_2 = get_by_institution_prefix(institution, sorting);
+	int s1 = result_1.size();
+	int s2 = result_2.size();
+	int s =min(s1, s2);
+	vector<LDBRegister> result(max(result_1.size(), result_2.size()));
+	vector<LDBRegister>::iterator it;
+	switch (sorting) {
+	case BY_ALPHABETICAL_ORDER:
+		it = set_intersection(result_1.begin(), result_1.end(),
+				result_2.begin(), result_2.end(), result.begin(), cmp_reg_name);
+		break;
+	case BY_ALPHABETICAL_ORDER_REV:
+		it = set_intersection(result_1.begin(), result_1.end(),
+				result_2.begin(), result_2.end(), result.begin(),
+				cmp_reg_name_reverse);
+		break;
+	case BY_N_PUBLICATIONS:
+		it = set_intersection(result_1.begin(), result_1.end(),
+				result_2.begin(), result_2.end(), result.begin(),
+				cmp_reg_publications);
+		break;
+	case BY_N_PUBLICATIONS_REV:
+		it = set_intersection(result_1.begin(), result_1.end(),
+				result_2.begin(), result_2.end(), result.begin(),
+				cmp_reg_publications_reverse);
+		break;
+	case BY_N_JOURNALS:
+		it = set_intersection(result_1.begin(), result_1.end(),
+				result_2.begin(), result_2.end(), result.begin(),
+				cmp_reg_journals);
+		break;
+	case BY_N_JOURNALS_REV:
+		it = set_intersection(result_1.begin(), result_1.end(),
+				result_2.begin(), result_2.end(), result.begin(),
+				cmp_reg_journals_reverse);
+		break;
+	case BY_N_EVENTS:
+		it = set_intersection(result_1.begin(), result_1.end(),
+				result_2.begin(), result_2.end(), result.begin(),
+				cmp_reg_events);
+		break;
+	case BY_N_EVENTS_REV:
+		it = set_intersection(result_1.begin(), result_1.end(),
+				result_2.begin(), result_2.end(), result.begin(),
+				cmp_reg_events_reverse);
+	}
+	result.resize(it - result.begin());
+	return result;
+}
+
+vector<LDBRegister> LattesDB::get_all(SORTING_ORDER sorting) {
 	vector<LDBRegister> ret;
 	ret = seqFile.read_all();
-	sort(ret.begin(), ret.end(), sorting);
+	sortLDBRegister(ret.begin(), ret.end(), sorting);
 	return ret;
 }
 
-string LattesDB::utfToAscii(string str) {
-	string new_str;
-	unsigned int size = str.size();
-	for (unsigned int i = 0; i < size; i++) {
-		if (str[i] < 0) {
-			i++;
-			if ((str[i] >= -128 && str[i] <= -123)
-					|| (str[i] >= -96 && str[i] <= -91)) {
-				new_str.push_back('A');
-			} else if ((str[i] >= -120 && str[i] <= -117)
-					|| (str[i] >= -88 && str[i] <= -85)) {
-				new_str.push_back('E');
-			} else if ((str[i] >= -116 && str[i] <= -113)
-					|| (str[i] >= -84 && str[i] <= -81)) {
-				new_str.push_back('I');
-			} else if ((str[i] >= -110 && str[i] <= -106)
-					|| (str[i] >= -78 && str[i] <= -74)) {
-				new_str.push_back('O');
-			} else if ((str[i] >= -103 && str[i] <= -100)
-					|| (str[i] >= -71 && str[i] <= -68)) {
-				new_str.push_back('U');
-			} else if (str[i] == -89 || new_str[i] == -121) {
-				new_str.push_back('C');
-			}
-		} else {
-			new_str.push_back(toupper(str[i]));
-		}
-	}
-	return new_str;
-}
-
-void LattesDB::sort(vector<LDBRegister>::iterator begin,
-		vector<LDBRegister>::iterator end, SortOrder sorting) {
+void LattesDB::sortLDBRegister(vector<LDBRegister>::iterator begin,
+		vector<LDBRegister>::iterator end, SORTING_ORDER sorting) {
 	switch (sorting) {
 	case BY_ALPHABETICAL_ORDER:
 		stable_sort(begin, end, cmp_reg_name);

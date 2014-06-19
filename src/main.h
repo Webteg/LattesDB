@@ -13,3 +13,4 @@
 //#define MAIN_LATTESDB
 //#define MAIN_SORTING
 
+//#define MAIN_INTERSECTION

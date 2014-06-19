@@ -20,6 +20,8 @@ namespace std {
  */
 class LDBRegister {
 
+	string key;
+
 	string name; /**< Full name of the researcher. */
 
 	string institution; /**< Institution which the researcher is associated. */
@@ -62,6 +64,8 @@ public:
 	 */
 	string get_name();
 
+	string get_key();
+
 	/**
 	 * Returns the institution which the researcher is associated.
 	 * @return The institution which the researcher is associated.
@@ -103,6 +107,8 @@ public:
 	vector<int> get_event_coauthors();
 
 	string to_string();
+
+	static string utfToAscii(string str);
 
 	/**
 	 * Default class destructor.

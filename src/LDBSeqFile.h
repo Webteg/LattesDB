@@ -8,8 +8,8 @@
 #ifndef LDBSEQFILE_H_
 #define LDBSEQFILE_H_
 
-#include "LDBRegister.h"
 #include <fstream>
+#include "LDBRegister.h"
 
 namespace std {
 
