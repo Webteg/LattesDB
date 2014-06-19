@@ -28,7 +28,9 @@ class LDBRegister {
 
 	vector<string> events; /**< List of publications in events of the researcher. */
 
-	vector<int> coauthors;
+	vector<int> journals_coauthors;
+
+	vector<int> events_coauthors;
 
 public:
 
@@ -96,7 +98,9 @@ public:
 	 */
 	vector<string> get_events();
 
-	vector<int> get_coauthors();
+	vector<int> get_journals_coauthors();
+
+	vector<int> get_events_coauthors();
 
 	string to_string();
 
