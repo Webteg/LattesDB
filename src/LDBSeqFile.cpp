@@ -12,7 +12,7 @@
 namespace std {
 
 LDBSeqFile::LDBSeqFile() {
-
+	size = 0;
 }
 
 LDBSeqFile::LDBSeqFile(string file_name) {
@@ -20,9 +20,12 @@ LDBSeqFile::LDBSeqFile(string file_name) {
 	if (!file.is_open()) {
 		file.open(file_name.c_str(),
 				ios::in | ios::out | ios::binary | ios::trunc);
+		size = 0;
+		file.seekp(file.beg);
+		file.write((char*) &size, SIZE_UINT); //makes sure position 0 is empty.
+	} else {
+		file.read((char*) &size, SIZE_UINT);
 	}
-	file.seekp(file.beg);
-	file.write("\0", 1); //makes sure position 0 is empty.
 }
 
 void LDBSeqFile::open(string file_name) {
@@ -30,12 +33,15 @@ void LDBSeqFile::open(string file_name) {
 	if (!file.is_open()) {
 		file.open(file_name.c_str(),
 				ios::in | ios::out | ios::binary | ios::trunc);
+		unsigned int size = 0;
+		file.seekp(file.beg);
+		file.write((char*) &size, SIZE_UINT); //makes sure position 0 is empty.
+	} else {
+		file.read((char*) &size, SIZE_UINT);
 	}
-	file.seekp(file.beg);
-	file.write("\0", 1); //makes sure position 0 is empty.
 }
 
-bool LDBSeqFile::is_open(){
+bool LDBSeqFile::is_open() {
 	return file.is_open();
 }
 
@@ -45,6 +51,7 @@ unsigned long int LDBSeqFile::write(LDBRegister reg) {
 	unsigned int size;
 	string element;
 	vector<string> vec;
+	vector<int> vec_n;
 
 	//write name
 	element = reg.get_name();
@@ -68,6 +75,13 @@ unsigned long int LDBSeqFile::write(LDBRegister reg) {
 		file.write(s.c_str(), size);
 	}
 
+	//write list of journal_coauthors
+	vec_n = reg.get_journal_coauthors();
+	for (int n : vec_n) {
+		char c = n;
+		file.write(&c, SIZE_CHAR);
+	}
+
 	//write list of events
 	vec = reg.get_events();
 	size = vec.size();
@@ -77,7 +91,15 @@ unsigned long int LDBSeqFile::write(LDBRegister reg) {
 		file.write((char*) &size, SIZE_UINT);
 		file.write(s.c_str(), size);
 	}
+
+	//write list of event_coauthors
+	vec_n = reg.get_event_coauthors();
+	for (int n : vec_n) {
+		char c = n;
+		file.write(&c, SIZE_CHAR);
+	}
 	file.flush();
+	this->size++;
 	return ret;
 }
 
@@ -86,8 +108,7 @@ LDBRegister LDBSeqFile::read(unsigned long int pos) {
 	string name;
 	string institution;
 	string publication;
-	vector<string> journals;
-	vector<string> events;
+
 	unsigned int size;
 	unsigned int vec_size;
 	char buffer[BUFFER_SIZE]; // TODO não é seguro, tentar mudar.
@@ -104,36 +125,54 @@ LDBRegister LDBSeqFile::read(unsigned long int pos) {
 
 	//read list of journals
 	file.read((char*) &vec_size, SIZE_UINT);
+	vector<string> journals(vec_size);
 	for (unsigned int i = 0; i < vec_size; i++) {
 		file.read((char*) &size, SIZE_UINT);
 		file.read(buffer, size);
 		publication = buffer;
-		journals.push_back(publication);
+		journals[i] = publication;
+	}
+	//read list of journal_coauthors
+	vector<int> journal_coauthors(vec_size);
+	for (unsigned int i = 0; i < vec_size; i++) {
+		char c;
+		file.read(&c, SIZE_CHAR);
+		journal_coauthors[i] = c;
 	}
 
 	//read list of events
 	file.read((char*) &vec_size, SIZE_UINT);
+	vector<string> events(vec_size);
 	for (unsigned int i = 0; i < vec_size; i++) {
 		file.read((char*) &size, SIZE_UINT);
 		file.read(buffer, size);
 		publication = buffer;
-		events.push_back(publication);
+		events[i] = publication;
 	}
 
-	LDBRegister ret(name, institution, journals, events);
+	vector<int> event_coauthors(vec_size);
+	for (unsigned int i = 0; i < vec_size; i++) {
+		char c;
+		file.read(&c, SIZE_CHAR);
+		event_coauthors[i] = c;
+	}
+	LDBRegister rec(name, institution, journals, events, journal_coauthors,
+			event_coauthors);
+
+	LDBRegister ret(name, institution, journals, events, journal_coauthors,
+			event_coauthors);
 	return ret;
 }
 
 vector<LDBRegister> LDBSeqFile::read_all() {
 	vector<LDBRegister> ret;
-	file.seekg(1, file.beg);
+	file.seekg(SIZE_UINT, file.beg);
 	file.peek();
 	while (file.good()) {
 		string name;
 		string institution;
 		string publication;
-		vector<string> journals;
-		vector<string> events;
+
 		unsigned int size;
 		unsigned int vec_size;
 		char buffer[BUFFER_SIZE]; // TODO não é seguro, tentar mudar.
@@ -150,22 +189,39 @@ vector<LDBRegister> LDBSeqFile::read_all() {
 
 		//read list of journals
 		file.read((char*) &vec_size, SIZE_UINT);
+		vector<string> journals(vec_size);
 		for (unsigned int i = 0; i < vec_size; i++) {
 			file.read((char*) &size, SIZE_UINT);
 			file.read(buffer, size);
 			publication = buffer;
-			journals.push_back(publication);
+			journals[i] = publication;
+		}
+		//read list of journal_coauthors
+		vector<int> journal_coauthors(vec_size);
+		for (unsigned int i = 0; i < vec_size; i++) {
+			char c;
+			file.read(&c, SIZE_CHAR);
+			journal_coauthors[i] = c;
 		}
 
 		//read list of events
 		file.read((char*) &vec_size, SIZE_UINT);
+		vector<string> events(vec_size);
 		for (unsigned int i = 0; i < vec_size; i++) {
 			file.read((char*) &size, SIZE_UINT);
 			file.read(buffer, size);
 			publication = buffer;
-			events.push_back(publication);
+			events[i] = publication;
 		}
-		LDBRegister rec(name, institution, journals, events);
+
+		vector<int> event_coauthors(vec_size);
+		for (unsigned int i = 0; i < vec_size; i++) {
+			char c;
+			file.read(&c, SIZE_CHAR);
+			event_coauthors[i] = c;
+		}
+		LDBRegister rec(name, institution, journals, events, journal_coauthors,
+				event_coauthors);
 		ret.push_back(rec);
 
 		file.peek();
@@ -174,7 +230,13 @@ vector<LDBRegister> LDBSeqFile::read_all() {
 }
 
 void LDBSeqFile::close() {
+	file.seekp(file.beg);
+	file.write((char*) &size, SIZE_UINT);
 	file.close();
+}
+
+unsigned int LDBSeqFile::get_size() {
+	return size;
 }
 
 LDBSeqFile::~LDBSeqFile() {

@@ -20,8 +20,12 @@ class LDBSeqFile {
 
 	fstream file; /**< File handler */
 
+	unsigned int size;
+
 	static const int SIZE_UINT = sizeof(unsigned int);
 	/**< Size of unsigned int constant */
+
+	static const int SIZE_CHAR = sizeof(char);
 
 	static const int BUFFER_SIZE = 512;
 
@@ -54,6 +58,8 @@ public:
 	LDBRegister read(unsigned long int pos);
 
 	vector<LDBRegister> read_all();
+
+	unsigned int get_size();
 
 	/**
 	 * Saves changes and closes the file.

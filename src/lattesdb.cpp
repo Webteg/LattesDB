@@ -18,7 +18,7 @@ int main() {
 
 	LattesDB lattes("Lattes");
 	if (lattes.readXMLDir("xmlLattes")) {
-
+		cout << "Size: " << lattes.get_size() << endl;
 		cout << "Files read.\n\nTrying to read records by full name...\n\n"
 				<< flush;
 		LDBRegister result = lattes.get_by_name_full(string("Rodrigo Machado"));

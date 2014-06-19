@@ -129,13 +129,13 @@ string LDBRegister::to_string() {
 	output << name << " - " << institution << endl;
 	output << "Total Pulications: " << journals.size() + events.size() << endl;
 	output << journals.size() << " Journal Publication(s): " << endl;
-	for (string s : journals) {
-		output << s << endl;
+	for (int i = 0; i < journals.size(); i++) {
+		output << journals[i] << " - " << journal_coauthors[i] << " coauthors." << endl;
 	}
 	output << endl;
 	output << events.size() << " Event Publication(s): " << endl;
-	for (string s : events) {
-		output << s << endl;
+	for (int i = 0; i < events.size(); i++) {
+		output << events[i] << " - " << event_coauthors[i] << " coauthors." << endl;
 	}
 	output << "////////////////////////////////////////////////////////////"
 			<< endl;

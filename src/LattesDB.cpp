@@ -280,3 +280,7 @@ LattesDB::~LattesDB() {
 }
 
 } /* namespace std */
+
+unsigned int LattesDB::get_size() {
+	return seqFile.get_size();
+}

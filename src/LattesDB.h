@@ -96,6 +96,8 @@ public:
 	void sortLDBRegister(vector<LDBRegister>::iterator begin,
 			vector<LDBRegister>::iterator end, SORTING_ORDER sorting);
 
+	unsigned int get_size();
+
 	void close();
 
 	virtual ~LattesDB();

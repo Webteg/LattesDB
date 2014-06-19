@@ -20,10 +20,16 @@ int main() {
 
 	vector<string> journals;
 	vector<string> events;
+	vector<int> journal_coauthors;
+	vector<int> event_coauthors;
+	journals.push_back("asdfasd");
+	journal_coauthors.push_back(0);
 	events.push_back("SIM 2014 - Polarity-Oriented AIG Rewriting for XOR/XNOR");
-	LDBRegister reg("Marcos Henrique Backes", "UFRGS", journals, events);
+	event_coauthors.push_back(3);
+	LDBRegister reg("Marcos Henrique Backes", "UFRGS", journals, events, journal_coauthors, event_coauthors);
 	unsigned int pos = file.write(reg);
 	cout << "Inserted at: " << pos << endl;
+	cout << "File size: " << file.get_size() << endl;
 	file.close();
 
 	cout << "Trying to read the one just inserted:" << endl;
