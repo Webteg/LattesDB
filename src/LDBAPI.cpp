@@ -34,15 +34,12 @@ void LDBAPI::mainMenu() {
 
 	/* Create items */
 	main_menu_items = new ITEM*[main_options_size];
+	int op[main_options_size];
 	for (i = 0; i < main_options_size; ++i) {
 		main_menu_items[i] = new_item(main_options[i].c_str(), "\0");
+		op[i] = i;
+		set_item_userptr(main_menu_items[i], (void*) &op[i]);
 	}
-	int op0 = 0, op1 = 1, op2 = 2, op3 = 3, op4 = 4;
-	set_item_userptr(main_menu_items[0], (void*) &op0);
-	set_item_userptr(main_menu_items[1], (void*) &op1);
-	set_item_userptr(main_menu_items[2], (void*) &op2);
-	set_item_userptr(main_menu_items[3], (void*) &op3);
-	set_item_userptr(main_menu_items[4], (void*) &op4);
 
 	/* Create menu */
 	main_menu = new_menu((ITEM **) main_menu_items);
@@ -63,8 +60,8 @@ void LDBAPI::mainMenu() {
 	/* Post the menu */
 	post_menu(main_menu);
 	wrefresh(main_menu_win);
-
-	while ((c = wgetch(main_menu_win)) != KEY_F(2)) {
+	bool exit = true;
+	while (exit && (c = wgetch(main_menu_win)) != KEY_F(2)) {
 		switch (c) {
 		case KEY_DOWN:
 			menu_driver(main_menu, REQ_DOWN_ITEM);
@@ -74,12 +71,17 @@ void LDBAPI::mainMenu() {
 			break;
 		case 10:
 			int option = *((int*) item_userptr(current_item(main_menu)));
-			mvaddch(0, 0, option);
-			refresh();
 			switch (option) {
 			case 0:
-				addXMLMenu();
-				wrefresh(main_menu_win);
+				addXML();
+				break;
+			case 1:
+				addDir();
+				break;
+
+			case 4:
+				exit = false;
+
 			}
 			box(main_menu_win, 0, 0);
 			mvprintw(2, 4, "Lattes Database");
@@ -97,27 +99,87 @@ void LDBAPI::mainMenu() {
 	for (i = 0; i < main_options_size; ++i)
 		free_item(main_menu_items[i]);
 	endwin();
+	lattes->close();
 }
 
-void LDBAPI::addXMLMenu() {
+void LDBAPI::addXML() {
 	WINDOW* addXMLWin;
-	char buffer[512];
+	int c;
+	string buffer;
 	addXMLWin = newwin(LINES, COLS, 0, 0);
-	echo();
+	keypad(addXMLWin, TRUE);
 	mvwprintw(addXMLWin, 5, 10, "Digite o nome do arquivo XML:");
-	mvwscanw(addXMLWin, 6, 10, buffer);
-	noecho();
-	string file_name = buffer;
+	mvdelch(6, 10);
 	wrefresh(addXMLWin);
+	while ((c = getch()) != 10) {
+		switch (c) {
+		case KEY_BACKSPACE:
+			if (buffer.size() > 0) {
+				buffer.resize(buffer.size() - 1);
+				mvdelch(6, 10 + buffer.size());
+			}
+			mvdelch(6, 10 + buffer.size());
+			break;
+		default:
+			if (isalpha(c)) {
+				mvaddch(6, 10 + buffer.size(), c);
+				buffer.push_back(c);
+			}
+		}
+		wrefresh(addXMLWin);
+	}
 	wclear(addXMLWin);
-	//função
-	mvwprintw(addXMLWin, 5, 10, "Arquivo inserido com sucesso!");
-	mvwprintw(addXMLWin, 6, 6, "Pressione qualquer tecla para continuar");
+	if (lattes->readXMLFile(buffer))
+		mvwprintw(addXMLWin, 5, 10, "Arquivo inserido com sucesso!");
+	else
+		mvwprintw(addXMLWin, 5, 10, "Arquivo não pode ser aberto.");
+	mvwprintw(addXMLWin, 6, 6, "Pressione qualquer tecla para continuar.");
 	wrefresh(addXMLWin);
 	wgetch(addXMLWin);
 	wclear(addXMLWin);
 	wrefresh(addXMLWin);
 	delwin(addXMLWin);
+	endwin();
+	endwin();
+}
+
+void LDBAPI::addDir() {
+	WINDOW* addDirWin;
+	int c;
+	string buffer;
+	addDirWin = newwin(LINES, COLS, 0, 0);
+	keypad(addDirWin, TRUE);
+	mvwprintw(addDirWin, 5, 10, "Digite o nome do arquivo XML:");
+	mvdelch(6, 10);
+	wrefresh (addDirWin);
+	while ((c = getch()) != 10) {
+		switch (c) {
+		case KEY_BACKSPACE:
+			if (buffer.size() > 0) {
+				buffer.resize(buffer.size() - 1);
+				mvdelch(6, 10 + buffer.size());
+			}
+			mvdelch(6, 10 + buffer.size());
+			break;
+		default:
+			if (isalpha (c)) {
+				mvaddch(6, 10 + buffer.size(), c);
+				buffer.push_back(c);
+			}
+		}
+		wrefresh(addDirWin);
+	}
+	wclear(addDirWin);
+	if (lattes->readXMLDir(buffer))
+		mvwprintw(addDirWin, 5, 10, "Diretório inserido com sucesso!");
+	else
+		mvwprintw(addDirWin, 5, 10, "Diretório não pode ser aberto");
+	mvwprintw(addDirWin, 6, 6, "Pressione qualquer tecla para continuar.");
+	wrefresh(addDirWin);
+	wgetch(addDirWin);
+	wclear(addDirWin);
+	wrefresh(addDirWin);
+	delwin(addDirWin);
 	endwin();
 	endwin();
 }
@@ -154,6 +216,7 @@ void LDBAPI::printResults(vector<LDBRegister> results) {
 	post_menu(menu);
 	box(win, 0, 0);
 	mvwprintw(win, 1, 1, "Resultados");
+	mvwprintw(win, LINES - 1, 1, "F2 - Retornar ao menu");
 	pos_menu_cursor(menu);
 	wrefresh(win);
 
@@ -176,6 +239,7 @@ void LDBAPI::printResults(vector<LDBRegister> results) {
 			//call result FUNÇÃO DO LUIZ
 			box(win, 0, 0);
 			mvwprintw(win, 1, 1, "Resultados");
+			mvwprintw(win, LINES - 1, 1, "F2 - Retornar ao menu");
 			pos_menu_cursor(menu);
 			break;
 		}
@@ -185,7 +249,6 @@ void LDBAPI::printResults(vector<LDBRegister> results) {
 	free_menu(menu);
 	for (int i = 0; i < size; ++i)
 		free_item(items[i]);
-
 	endwin();
 }
 

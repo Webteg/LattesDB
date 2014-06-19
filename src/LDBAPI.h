@@ -19,7 +19,8 @@ class LDBAPI {
 public:
 	LDBAPI(string name);
 	void mainMenu();
-	void addXMLMenu();
+	void addXML();
+	void addDir();
 	void printResults(vector<LDBRegister>);
 	virtual ~LDBAPI();
 };
