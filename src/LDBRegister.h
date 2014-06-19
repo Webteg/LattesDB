@@ -9,6 +9,7 @@
 #define LDBREGISTER_H_
 
 #include <string>
+#include <string.h>
 #include <vector>
 #include "pugi/pugixml.hpp"
 
