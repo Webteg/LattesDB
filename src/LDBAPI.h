@@ -8,6 +8,7 @@
 #ifndef LDBAPI_H_
 #define LDBAPI_H_
 
+#include <string>
 #include "LattesDB.h"
 
 namespace std {
@@ -17,7 +18,11 @@ class LDBAPI {
 public:
 	LDBAPI(string name);
 	void mainMenu();
-	void searchMenu();
+
+	void showRegisterData(LDBRegister reg);
+
+	void addXMLMenu();
+
 	virtual ~LDBAPI();
 };
 
