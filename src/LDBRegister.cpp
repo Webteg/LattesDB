@@ -64,7 +64,7 @@ string LDBRegister::get_name() {
 	return name;
 }
 
-vector<int> get_coauthors() {
+vector<int> LDBRegister::get_coauthors() {
 	return coauthors;
 }
 
