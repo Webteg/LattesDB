@@ -26,6 +26,8 @@ bool LDBRegister::readXML(string file_name) {
 	pugi::xml_document doc;
 	pugi::xml_parse_result result;
 	result = doc.load_file(file_name.c_str());
+	string coauthor_name;
+	int coauthors = 0;
 
 	if (result) {
 		pugi::xml_node events_works = doc.child("CURRICULO-VITAE").child(
@@ -47,12 +49,32 @@ bool LDBRegister::readXML(string file_name) {
 			journals.push_back(
 					work.child("DADOS-BASICOS-DO-ARTIGO").attribute(
 							"TITULO-DO-ARTIGO").value());
+
+			coauthors = 0;
+			for(pugi::xml_node authors = work.child("AUTORES"); strcmp(authors.name(), "AUTORES") == 0; authors = authors.next_sibling()){
+				coauthor_name = authors.attribute("NOME-COMPLETO-DO-AUTOR").value();
+				if (name != coauthor_name) {
+					coauthors++;
+				}
+			}
+			journal_coauthors.push_back(coauthors);
 		}
+
+
 		for (pugi::xml_node work = events_works.first_child(); work;
 				work = work.next_sibling()) {
 			events.push_back(
 					work.child("DADOS-BASICOS-DO-TRABALHO").attribute(
 							"TITULO-DO-TRABALHO").value());
+
+			coauthors = 0;
+			for(pugi::xml_node authors = work.child("AUTORES"); strcmp(authors.name(), "AUTORES") == 0; authors = authors.next_sibling()){
+				coauthor_name = authors.attribute("NOME-COMPLETO-DO-AUTOR").value();
+				if (name != coauthor_name) {
+					coauthors++;
+				}
+			}
+			event_coauthors.push_back(coauthors);
 		}
 
 		return true;
@@ -64,8 +86,12 @@ string LDBRegister::get_name() {
 	return name;
 }
 
-vector<int> LDBRegister::get_coauthors() {
-	return coauthors;
+vector<int> LDBRegister::get_journal_coauthors() {
+	return journal_coauthors;
+}
+
+vector<int> LDBRegister::get_event_coauthors() {
+	return event_coauthors;
 }
 
 string LDBRegister::get_institution() {
