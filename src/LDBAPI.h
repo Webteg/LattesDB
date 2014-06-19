@@ -9,6 +9,8 @@
 #define LDBAPI_H_
 
 #include "LattesDB.h"
+#include "LDBRegister.h"
+#include <vector>
 
 namespace std {
 
@@ -18,6 +20,7 @@ public:
 	LDBAPI(string name);
 	void mainMenu();
 	void addXMLMenu();
+	void printResults(vector<LDBRegister>);
 	virtual ~LDBAPI();
 };
 

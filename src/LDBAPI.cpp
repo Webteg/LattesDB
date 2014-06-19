@@ -39,6 +39,10 @@ void LDBAPI::mainMenu() {
 	}
 	int op0 = 0, op1 = 1, op2 = 2, op3 = 3, op4 = 4;
 	set_item_userptr(main_menu_items[0], (void*) &op0);
+	set_item_userptr(main_menu_items[1], (void*) &op1);
+	set_item_userptr(main_menu_items[2], (void*) &op2);
+	set_item_userptr(main_menu_items[3], (void*) &op3);
+	set_item_userptr(main_menu_items[4], (void*) &op4);
 
 	/* Create menu */
 	main_menu = new_menu((ITEM **) main_menu_items);
@@ -115,6 +119,73 @@ void LDBAPI::addXMLMenu() {
 	wrefresh(addXMLWin);
 	delwin(addXMLWin);
 	endwin();
+	endwin();
+}
+
+void LDBAPI::printResults(vector<LDBRegister> results) {
+	WINDOW* win;
+	int c;
+	MENU *menu;
+	ITEM** items;
+	int size = results.size();
+	int options[size];
+	items = new ITEM*[size + 1];
+
+	initscr();
+	cbreak();
+	noecho();
+	keypad(stdscr, TRUE);
+
+	for (int i = 0; i < size; i++) {
+		items[i] = new_item(results[i].get_key().c_str(), "\0");
+		options[i] = i;
+		set_item_userptr(items[i], (void*) &(options[i]));
+	}
+	items[size] = new_item("\0", "\0");
+	menu = new_menu((ITEM **) items);
+
+	win = newwin(LINES, COLS, 0, 0);
+	keypad(win, TRUE);
+
+	set_menu_win(menu, win);
+	WINDOW* sub_win = derwin(win, LINES - 3, COLS - 2, 3, 1);
+	set_menu_sub(menu, sub_win);
+
+	post_menu(menu);
+	box(win, 0, 0);
+	mvwprintw(win, 1, 1, "Resultados");
+	pos_menu_cursor(menu);
+	wrefresh(win);
+
+	while ((c = wgetch(win)) != KEY_F(2)) {
+		switch (c) {
+		case KEY_DOWN:
+			menu_driver(menu, REQ_DOWN_ITEM);
+			break;
+		case KEY_UP:
+			menu_driver(menu, REQ_UP_ITEM);
+			break;
+		case KEY_NPAGE:
+			menu_driver(menu, REQ_SCR_DPAGE);
+			break;
+		case KEY_PPAGE:
+			menu_driver(menu, REQ_SCR_UPAGE);
+			break;
+		case 10:
+			int option = *((int*) item_userptr(current_item(menu)));
+			//call result FUNÇÃO DO LUIZ
+			box(win, 0, 0);
+			mvwprintw(win, 1, 1, "Resultados");
+			pos_menu_cursor(menu);
+			break;
+		}
+		wrefresh(win);
+	}
+	unpost_menu(menu);
+	free_menu(menu);
+	for (int i = 0; i < size; ++i)
+		free_item(items[i]);
+
 	endwin();
 }
 

@@ -13,11 +13,16 @@
 
 using namespace std;
 
-int main()
-{
-	LDBAPI api("Lattes");
-	api.mainMenu();
-	//api.addXMLMenu();
+int main() {
+	LattesDB lattes("Lattes");
+
+	if (lattes.readXMLDir("xmlLattes")) {
+		vector<LDBRegister> results = lattes.get_by_institution_prefix("U");
+		LDBAPI api("aaaa");
+		//api.mainMenu();
+		//api.addXMLMenu();
+		api.printResults(results);
+	}
 }
 
 #endif
