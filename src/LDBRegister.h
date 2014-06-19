@@ -49,7 +49,7 @@ public:
 	 * @param events List of publications in events of the researcher.
 	 */
 	LDBRegister(string name, string institution, vector<string> journals,
-			vector<string> events);
+			vector<string> events, vector<int> journal_coauthors, vector<int> event_coauthors);
 
 	/**
 	* Loads attributes froma a xml-lattes file.

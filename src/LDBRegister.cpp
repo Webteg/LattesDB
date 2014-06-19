@@ -16,12 +16,15 @@ LDBRegister::LDBRegister() {
 }
 
 LDBRegister::LDBRegister(string name, string institution,
-		vector<string> journals, vector<string> events) {
+		vector<string> journals, vector<string> events, vector<int> journal_coauthors, vector<int> event_coauthors
+) {
 	this->name = name;
 	this->key = utfToAscii(name);
 	this->institution = institution;
 	this->journals = journals;
 	this->events = events;
+	this->event_coauthors = event_coauthors;
+	this->journal_coauthors = journal_coauthors;
 }
 
 bool LDBRegister::readXML(string file_name) {
