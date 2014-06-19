@@ -11,5 +11,5 @@
 //#define MAIN_SEQFILE
 //#define MAIN_LINKEDLIST
 //#define MAIN_LATTESDB
-#define MAIN_SORTING
-
+//#define MAIN_SORTING
+#define MAIN_INTERSECTION

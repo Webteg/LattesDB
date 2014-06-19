@@ -22,8 +22,7 @@ typedef unsigned char uchar;
 
 namespace std {
 
-enum SortOrder {
-	NO_ORDER,
+enum SORTING_ORDER {
 	BY_ALPHABETICAL_ORDER,
 	BY_ALPHABETICAL_ORDER_REV,
 	BY_N_PUBLICATIONS,
@@ -59,39 +58,43 @@ public:
 
 	LDBRegister get_by_name_full(string name);
 
-	vector<LDBRegister> get_by_name_prefix(string name, SortOrder sorting =
-			NO_ORDER);
+	vector<LDBRegister> get_by_name_prefix(string name, SORTING_ORDER sorting =
+			BY_ALPHABETICAL_ORDER);
 
 	vector<LDBRegister> get_by_institution_full(string institution,
-			SortOrder sorting = NO_ORDER);
+			SORTING_ORDER sorting = BY_ALPHABETICAL_ORDER);
 
 	vector<LDBRegister> get_by_institution_prefix(string institution,
-			SortOrder sorting = NO_ORDER);
+			SORTING_ORDER sorting = BY_ALPHABETICAL_ORDER);
 
-	vector<LDBRegister> get_all(SortOrder sorting = NO_ORDER);
+	vector<LDBRegister> get_by_name_and_institution_prefix(string name,
+			string institution, SORTING_ORDER sorting = BY_ALPHABETICAL_ORDER);
 
-	// reg1 > reg2
-	static bool cmp_reg_name( LDBRegister reg1,  LDBRegister reg2);
-
-	// reg1 < reg2
-	static bool cmp_reg_name_reverse( LDBRegister reg1,  LDBRegister reg2);
+	vector<LDBRegister> get_all(SORTING_ORDER sorting = BY_ALPHABETICAL_ORDER);
 
 	// reg1 > reg2
-	static bool cmp_reg_publications( LDBRegister reg1,  LDBRegister reg2);
+	static bool cmp_reg_name(LDBRegister reg1, LDBRegister reg2);
 
 	// reg1 < reg2
-	static bool cmp_reg_publications_reverse( LDBRegister reg1,  LDBRegister reg2);
+	static bool cmp_reg_name_reverse(LDBRegister reg1, LDBRegister reg2);
 
-	static bool cmp_reg_journals( LDBRegister reg1,  LDBRegister reg2);
+	// reg1 > reg2
+	static bool cmp_reg_publications(LDBRegister reg1, LDBRegister reg2);
 
-	static bool cmp_reg_journals_reverse( LDBRegister reg1,  LDBRegister reg2);
+	// reg1 < reg2
+	static bool cmp_reg_publications_reverse(LDBRegister reg1,
+			LDBRegister reg2);
 
-	static bool cmp_reg_events( LDBRegister reg1,  LDBRegister reg2);
+	static bool cmp_reg_journals(LDBRegister reg1, LDBRegister reg2);
 
-	static bool cmp_reg_events_reverse( LDBRegister reg1,  LDBRegister reg2);
+	static bool cmp_reg_journals_reverse(LDBRegister reg1, LDBRegister reg2);
 
-	void sort(vector<LDBRegister>::iterator begin,
-			vector<LDBRegister>::iterator end, SortOrder sort);
+	static bool cmp_reg_events(LDBRegister reg1, LDBRegister reg2);
+
+	static bool cmp_reg_events_reverse(LDBRegister reg1, LDBRegister reg2);
+
+	void sortLDBRegister(vector<LDBRegister>::iterator begin,
+			vector<LDBRegister>::iterator end, SORTING_ORDER sorting);
 
 	void close();
 

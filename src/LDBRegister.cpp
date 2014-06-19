@@ -39,6 +39,8 @@ bool LDBRegister::readXML(string file_name) {
 		name = doc.child("CURRICULO-VITAE").child("DADOS-GERAIS").attribute(
 				"NOME-COMPLETO").value();
 
+		key = utfToAscii(name);
+
 		institution = doc.child("CURRICULO-VITAE").child("DADOS-GERAIS").child(
 				"ENDERECO").child("ENDERECO-PROFISSIONAL").attribute(
 				"NOME-INSTITUICAO-EMPRESA").value();
