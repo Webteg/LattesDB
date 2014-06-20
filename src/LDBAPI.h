@@ -21,9 +21,11 @@ public:
 	void mainMenu();
 	void addXML();
 	void addDir();
+	void showAll();
 	void searchName();
 	void searchInstitution();
-	void printResults(vector<LDBRegister>);
+	void searchNameInstitution();
+	void printResults(vector<LDBRegister> results);
 	virtual ~LDBAPI();
 };
 
