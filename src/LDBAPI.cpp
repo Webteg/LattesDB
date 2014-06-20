@@ -369,13 +369,15 @@ void LDBAPI::printResults(vector<LDBRegister> results) {
 			menu_driver(menu, REQ_SCR_UPAGE);
 			break;
 		case 10:
-			int option = *((int*) item_userptr(current_item(menu)));
-			showRegisterData(results[option]);
-			box(win, 0, 0);
-			mvwprintw(win, 1, 1, s.str().c_str());
-			mvwprintw(win, LINES - 2, 1,
-					"F2 - Retornar ao menu\t\tENTER - Selecionar Registro");
-			pos_menu_cursor(menu);
+			if(size > 0) {
+				int option = *((int*) item_userptr(current_item(menu)));
+				showRegisterData(results[option]);
+				box(win, 0, 0);
+				mvwprintw(win, 1, 1, s.str().c_str());
+				mvwprintw(win, LINES - 2, 1,
+						"F2 - Retornar ao menu\t\tENTER - Selecionar Registro");
+				pos_menu_cursor(menu);
+			}
 			break;
 		}
 		wrefresh(win);
