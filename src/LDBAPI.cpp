@@ -245,7 +245,7 @@ void LDBAPI::showRegisterData(LDBRegister reg) {
 	event_coauthors = reg.get_event_coauthors();
 	for(string event : reg.get_events()) {
 		stringstream s;
-		s << "\tNumero de co-autores: " << journal_coauthors[i];
+		s << "\tNumero de co-autores: " << event_coauthors[i];
 		reg_data.push_back(s.str());
 		i++;
 	}
