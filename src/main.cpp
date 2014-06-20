@@ -17,15 +17,9 @@ int main() {
 
 	LDBAPI api("Lattes");
 	api.mainMenu();
-	vector<string> events;
-	vector<string> journals;
-	vector<int> journal_coauthors;
-	vector<int> event_coauthors;
-	events.push_back("SIM 2014 ashdjfhadskjlfhkjasdhfkjadshfkjhasdkjhkj");
-	event_coauthors.push_back(3);
-	LDBRegister marcos("Marcos Henrique Backes", "UFRGS", journals, events,
-			journal_coauthors, event_coauthors);
-	//api.showRegisterData(marcos);
+	//LDBRegister reg;
+	//if(reg.readXML("xmlLattes/0455487141833418.xml"))
+		//api.showRegisterData(reg);
 }
 
 #endif

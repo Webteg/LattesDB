@@ -72,7 +72,7 @@ bool LattesDB::readXMLDir(string dir_name) {
 					if (find == 0) {
 						unsigned long int pos = seqFile.write(reg);
 						namePrefix.insert(name, pos);
-						string institution = LDBRegister::utfToAscii(
+						string institution = LDBRegister::utfToAsciiUpper(
 								reg.get_institution());
 						unsigned long int list = institutionPrefix.get(
 								institution);
@@ -127,7 +127,7 @@ bool LattesDB::readXMLFile(string file_name) {
 
 vector<LDBRegister> LattesDB::get_by_institution_full(string institution,
 		SORTING_ORDER sorting) {
-	institution = LDBRegister::utfToAscii(institution);
+	institution = LDBRegister::utfToAsciiUpper(institution);
 	vector<LDBRegister> ret;
 	unsigned long int pos = institutionPrefix.get(institution);
 	if (pos != 0) {
@@ -142,7 +142,7 @@ vector<LDBRegister> LattesDB::get_by_institution_full(string institution,
 
 vector<LDBRegister> LattesDB::get_by_institution_prefix(string institution,
 		SORTING_ORDER sorting) {
-	institution = LDBRegister::utfToAscii(institution);
+	institution = LDBRegister::utfToAsciiUpper(institution);
 	vector<LDBRegister> ret;
 	vector<unsigned long int> posList = institutionPrefix.getPrefix(
 			institution);
@@ -159,7 +159,7 @@ vector<LDBRegister> LattesDB::get_by_institution_prefix(string institution,
 }
 
 LDBRegister LattesDB::get_by_name_full(string name) {
-	name = LDBRegister::utfToAscii(name);
+	name = LDBRegister::utfToAsciiUpper(name);
 	unsigned long int address = namePrefix.get(name);
 	if (address != 0)
 		return seqFile.read(address);
@@ -169,7 +169,7 @@ LDBRegister LattesDB::get_by_name_full(string name) {
 
 vector<LDBRegister> LattesDB::get_by_name_prefix(string name,
 		SORTING_ORDER sorting) {
-	name = LDBRegister::utfToAscii(name);
+	name = LDBRegister::utfToAsciiUpper(name);
 	vector<LDBRegister> ret;
 	vector<unsigned long int> addressList = namePrefix.getPrefix(name);
 	for (unsigned long int address : addressList) {
@@ -181,8 +181,8 @@ vector<LDBRegister> LattesDB::get_by_name_prefix(string name,
 
 vector<LDBRegister> LattesDB::get_by_name_and_institution_prefix(string name,
 		string institution, SORTING_ORDER sorting) {
-	name = LDBRegister::utfToAscii(name);
-	institution = LDBRegister::utfToAscii(institution);
+	name = LDBRegister::utfToAsciiUpper(name);
+	institution = LDBRegister::utfToAsciiUpper(institution);
 	vector<LDBRegister> result_1 = get_by_name_prefix(name, sorting);
 	vector<LDBRegister> result_2 = get_by_institution_prefix(institution, sorting);
 	int s1 = result_1.size();
