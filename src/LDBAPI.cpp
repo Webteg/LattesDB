@@ -478,8 +478,7 @@ void LDBAPI::searchName() {
 		if (result.get_key().size() != 0) {
 			showRegisterData(result);
 		} else {
-			clear();
-			wprintw(searchNameWin, "Nenhum registro encontrado.");
+			mvwprintw(searchNameWin, 5, 1, "Nenhum registro encontrado.");
 			wrefresh(searchNameWin);
 			refresh();
 			getch();
