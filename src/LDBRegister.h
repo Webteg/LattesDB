@@ -109,6 +109,7 @@ public:
 	string to_string();
 
 	static string utfToAscii(string str);
+	static string utfToAsciiUpper(string str);
 
 	/**
 	 * Default class destructor.

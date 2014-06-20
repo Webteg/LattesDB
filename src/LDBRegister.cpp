@@ -152,6 +152,44 @@ string LDBRegister::utfToAscii(string str) {
 	for (unsigned int i = 0; i < size; i++) {
 		if (str[i] < 0) {
 			i++;
+			if (str[i] >= -128 && str[i] <= -123){
+				new_str.push_back('A');
+			} else if(str[i] >= -96 && str[i] <= -91) {
+				new_str.push_back('a');
+			} else if (str[i] >= -120 && str[i] <= -117) {
+				new_str.push_back('E');
+			} else if (str[i] >= -88 && str[i] <= -85) {
+				new_str.push_back('e');
+			} else if (str[i] >= -116 && str[i] <= -113) {
+				new_str.push_back('I');
+			} else if (str[i] >= -84 && str[i] <= -81) {
+				new_str.push_back('i');
+			} else if (str[i] >= -110 && str[i] <= -106) {
+				new_str.push_back('O');
+			} else if (str[i] >= -78 && str[i] <= -74) {
+				new_str.push_back('o');
+			} else if (str[i] >= -103 && str[i] <= -100) {
+				new_str.push_back('U');
+			} else if (str[i] >= -71 && str[i] <= -68) {
+				new_str.push_back('u');
+			} else if (str[i] == -89) {
+				new_str.push_back('c');
+			} else if (new_str[i] == -121) {
+				new_str.push_back('C');
+			}
+		} else {
+			new_str.push_back(str[i]);
+		}
+	}
+	return new_str;
+}
+
+string LDBRegister::utfToAsciiUpper(string str) {
+	string new_str;
+	unsigned int size = str.size();
+	for (unsigned int i = 0; i < size; i++) {
+		if (str[i] < 0) {
+			i++;
 			if ((str[i] >= -128 && str[i] <= -123)
 					|| (str[i] >= -96 && str[i] <= -91)) {
 				new_str.push_back('A');
