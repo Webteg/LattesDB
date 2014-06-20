@@ -25,7 +25,7 @@ int main() {
 		cout << result.get_name() << endl;
 		int i = 0;
 		cout << "Trying to read records by name prefix...\n\n" << flush;
-		vector<LDBRegister> results = lattes.get_by_name_prefix(string(""));
+		vector<LDBRegister> results = lattes.get_by_name_prefix("Al");
 		for (LDBRegister r : results) {
 			cout << i++ << " - " << r.get_name() << " - " << r.get_institution()
 					<< endl;

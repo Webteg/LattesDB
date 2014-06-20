@@ -19,7 +19,7 @@ LDBRegister::LDBRegister(string name, string institution,
 		vector<string> journals, vector<string> events, vector<int> journal_coauthors, vector<int> event_coauthors
 ) {
 	this->name = name;
-	this->key = utfToAscii(name);
+	this->key = utfToAsciiUpper(name);
 	this->institution = institution;
 	this->journals = journals;
 	this->events = events;
@@ -44,7 +44,7 @@ bool LDBRegister::readXML(string file_name) {
 		name = doc.child("CURRICULO-VITAE").child("DADOS-GERAIS").attribute(
 				"NOME-COMPLETO").value();
 
-		key = utfToAscii(name);
+		key = utfToAsciiUpper(name);
 
 		institution = doc.child("CURRICULO-VITAE").child("DADOS-GERAIS").child(
 				"ENDERECO").child("ENDERECO-PROFISSIONAL").attribute(
