@@ -9,6 +9,7 @@
 #define LDBAPI_H_
 
 #include <string>
+#include <sstream>
 #include "LattesDB.h"
 #include "LDBRegister.h"
 #include <vector>

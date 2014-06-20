@@ -60,6 +60,12 @@ void LDBAPI::mainMenu() {
 	/* Post the menu */
 	post_menu(main_menu);
 	wrefresh(main_menu_win);
+	vector<string> journals = {"haha", "asdasd"};
+	vector<string> events = {"ha2323", "asdasd112"};
+	vector<int> jca = {4,5};
+	vector<int> eca = {14,55};
+	LDBRegister reg2;
+	reg2.readXML("xmlLattes/0455487141833418.xml");
 	bool exit = true;
 	while (exit && (c = wgetch(main_menu_win)) != KEY_F(2)) {
 		switch (c) {
@@ -78,7 +84,10 @@ void LDBAPI::mainMenu() {
 			case 1:
 				addDir();
 				break;
+			case 2:
 
+				showRegisterData(reg2);
+				break;
 			case 4:
 				exit = false;
 			}
@@ -101,76 +110,6 @@ void LDBAPI::mainMenu() {
 	lattes->close();
 }
 
-void LDBAPI::showRegisterData(LDBRegister reg) {
-	ITEM **itens;
-	WINDOW* showRegisterData;
-	MENU *reg_menu;
-	vector<string> reg_data;
-	int i;
-
-	reg_data.push_back("Pesquisador: " + reg.get_name());
-	reg_data.push_back("Instituição: " + reg.get_institution());
-
-	reg_data.push_back("Publicações em periódicos:");
-
-	i = 0;
-	for(string journal : reg.get_journals()) {
-		reg_data.push_back(journal);
-		reg_data.push_back("Número de co-autores: " + std::to_string(journal[i]));
-		i++;
-	}
-
-	reg_data.push_back("Publicações em eventos:");
-
-	i = 0;
-	for(string event : reg.get_events()) {
-		reg_data.push_back(event);
-		reg_data.push_back("Número de co-autores: " + std::to_string(event[i]));
-		i++;
-	}
-
-	reg_data.push_back("\0");
-	int size = reg_data.size();
-	itens = new ITEM*[size];
-	for (i = 0; i < size; i++) {
-		itens[i] = new_item(reg_data[i].c_str(), "\0");
-	}
-
-	/* Create menu */
-	reg_menu = new_menu((ITEM **) itens);
-
-	/* Create the window to be associated with the menu */
-	showRegisterData = newwin(10, 40, 4, 4);
-	keypad(showRegisterData, TRUE);
-
-	/* Set main window and sub window */
-	set_menu_win(reg_menu, showRegisterData);
-	set_menu_sub(reg_menu, derwin(showRegisterData, 8, 38, 1, 1));
-
-	post_menu(reg_menu);
-	wrefresh(showRegisterData);
-
-	char c;
-	while ((c = wgetch(showRegisterData)) != 10) {
-		switch (c) {
-		case KEY_DOWN:
-			menu_driver(reg_menu, REQ_DOWN_ITEM);
-			break;
-		case KEY_UP:
-			menu_driver(reg_menu, REQ_UP_ITEM);
-			break;
-		}
-			refresh();
-			wrefresh(showRegisterData);
-	}
-
-	/* Unpost and free all the memory taken up */
-	unpost_menu(reg_menu);
-	free_menu(reg_menu);
-	for (i = 0; i < size; ++i)
-		free_item(itens[i]);
-	endwin();
-}
 
 void LDBAPI::addXML() {
 	WINDOW* addXMLWin;
@@ -251,6 +190,104 @@ void LDBAPI::addDir() {
 	wrefresh(addDirWin);
 	delwin(addDirWin);
 	endwin();
+	endwin();
+}
+
+void LDBAPI::showRegisterData(LDBRegister reg) {
+
+	WINDOW* win;
+	int c;
+	MENU *menu;
+	ITEM** items;
+	int i;
+	vector<string> reg_data;
+	vector<int> journal_coauthors;
+	vector<int> event_coauthors;
+
+	initscr();
+	cbreak();
+	noecho();
+	keypad(stdscr, TRUE);
+
+
+	/** criando array com itens **************************************/
+
+	reg_data.push_back("Pesquisador: " + reg.get_name());
+	reg_data.push_back("Instituição: " + reg.get_institution());
+
+	reg_data.push_back("Publicações em periódicos:");
+
+	i = 0;
+
+	journal_coauthors = reg.get_journal_coauthors();
+	for(string journal : reg.get_journals()) {
+		stringstream s;
+		s << "\tNumero de co-autores: " << journal_coauthors[i];
+		reg_data.push_back(s.str());
+		i++;
+	}
+
+	reg_data.push_back("Publicações em eventos:");
+
+	i = 0;
+	event_coauthors = reg.get_event_coauthors();
+	for(string event : reg.get_events()) {
+		stringstream s;
+		s << "\tNumero de co-autores: " << journal_coauthors[i];
+		reg_data.push_back(s.str());
+		i++;
+	}
+
+	/*************************************************************/
+
+
+	int size = reg_data.size();
+	items = new ITEM*[size + 1];
+	int options[size];
+
+	for (int i = 0; i < size; i++) {
+		items[i] = new_item(LDBRegister::utfToAscii(reg_data[i]).c_str(), "\0");
+		options[i] = i;
+		set_item_userptr(items[i], (void*) &(options[i]));
+	}
+	items[size] = new_item("\0", "\0");
+	menu = new_menu((ITEM **) items);
+
+	win = newwin(LINES, COLS, 0, 0);
+	keypad(win, TRUE);
+
+	set_menu_win(menu, win);
+	WINDOW* sub_win = derwin(win, LINES - 3, COLS - 2, 3, 1);
+	set_menu_sub(menu, sub_win);
+
+	box(win, 0, 0);
+	mvwprintw(win, 1, 1, "Dados do pesquisador");
+	mvwprintw(win, LINES - 1, 1, "F2 - Retornar ao menu");
+	pos_menu_cursor(menu);
+	post_menu(menu);
+	wrefresh(win);
+
+	while ((c = wgetch(win)) != KEY_F(2)) {
+		switch (c) {
+		case KEY_DOWN:
+			menu_driver(menu, REQ_DOWN_ITEM);
+			break;
+		case KEY_UP:
+			menu_driver(menu, REQ_UP_ITEM);
+			break;
+		case KEY_NPAGE:
+			menu_driver(menu, REQ_SCR_DPAGE);
+			break;
+		case KEY_PPAGE:
+			menu_driver(menu, REQ_SCR_UPAGE);
+			break;
+		}
+		wrefresh(win);
+	}
+	unpost_menu(menu);
+	free_menu(menu);
+	for (int i = 0; i < size; ++i)
+		free_item(items[i]);
 	endwin();
 }
 
