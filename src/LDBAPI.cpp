@@ -214,6 +214,7 @@ void LDBAPI::showRegisterData(LDBRegister reg) {
 	vector<string> reg_data;
 	vector<int> journal_coauthors;
 	vector<int> event_coauthors;
+	stringstream n_publications, n_journal_publications, n_event_publications;
 
 	initscr();
 	cbreak();
@@ -252,6 +253,10 @@ void LDBAPI::showRegisterData(LDBRegister reg) {
 		i++;
 	}
 
+	n_publications << "Total de publicacoes: " << reg.get_n_publications();
+	n_journal_publications << "Numero de publicacoes em periodicos: " << reg.get_n_journals();
+	n_event_publications << "Numero de publicacoes em eventos: " << reg.get_n_events();
+
 	int size = reg_data.size();
 	items = new ITEM*[size + 1];
 	int options[size];
@@ -274,6 +279,9 @@ void LDBAPI::showRegisterData(LDBRegister reg) {
 	box(win, 0, 0);
 	mvwprintw(win, 1, 1, "Dados do pesquisador");
 	mvwprintw(win, LINES - 1, 1, "F2 - Retornar ao menu");
+	mvwprintw(win, LINES - 4, 1, n_publications.str().c_str());
+	mvwprintw(win, LINES - 3, 1, n_journal_publications.str().c_str());
+	mvwprintw(win, LINES - 2, 1, n_event_publications.str().c_str());
 	pos_menu_cursor(menu);
 	post_menu(menu);
 	wrefresh(win);
@@ -471,7 +479,7 @@ void LDBAPI::searchName() {
 			showRegisterData(result);
 		} else {
 			clear();
-			mvwprintw(searchNameWin, 5, 1, "Nenhum registro encontrado.");
+			wprintw(searchNameWin, "Nenhum registro encontrado.");
 			wrefresh(searchNameWin);
 			refresh();
 			getch();
