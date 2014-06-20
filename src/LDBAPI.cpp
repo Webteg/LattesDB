@@ -62,10 +62,10 @@ void LDBAPI::mainMenu() {
 	/* Post the menu */
 	post_menu(main_menu);
 	wrefresh(main_menu_win);
-	vector<string> journals = {"haha", "asdasd"};
-	vector<string> events = {"ha2323", "asdasd112"};
-	vector<int> jca = {4,5};
-	vector<int> eca = {14,55};
+	vector<string> journals = { "haha", "asdasd" };
+	vector<string> events = { "ha2323", "asdasd112" };
+	vector<int> jca = { 4, 5 };
+	vector<int> eca = { 14, 55 };
 	LDBRegister reg2;
 	reg2.readXML("xmlLattes/0455487141833418.xml");
 	bool exit = true;
@@ -119,7 +119,6 @@ void LDBAPI::mainMenu() {
 	endwin();
 	lattes->close();
 }
-
 
 void LDBAPI::addXML() {
 	WINDOW* addXMLWin;
@@ -221,18 +220,19 @@ void LDBAPI::showRegisterData(LDBRegister reg) {
 	noecho();
 	keypad(stdscr, TRUE);
 
-
 	/* criando array com itens **************************************/
 
-	reg_data.push_back("Pesquisador: " + LDBRegister::utfToAscii(reg.get_name()));
-	reg_data.push_back("Instituicao: " + LDBRegister::utfToAscii(reg.get_institution()));
+	reg_data.push_back(
+			"Pesquisador: " + LDBRegister::utfToAscii(reg.get_name()));
+	reg_data.push_back(
+			"Instituicao: " + LDBRegister::utfToAscii(reg.get_institution()));
 
 	reg_data.push_back("Publicacoes em periodicos:");
 
 	i = 0;
 
 	journal_coauthors = reg.get_journal_coauthors();
-	for(string journal : reg.get_journals()) {
+	for (string journal : reg.get_journals()) {
 		stringstream s;
 		reg_data.push_back(LDBRegister::utfToAscii(journal));
 		s << "     Numero de co-autores: " << journal_coauthors[i];
@@ -244,15 +244,13 @@ void LDBAPI::showRegisterData(LDBRegister reg) {
 
 	i = 0;
 	event_coauthors = reg.get_event_coauthors();
-	for(string event : reg.get_events()) {
+	for (string event : reg.get_events()) {
 		reg_data.push_back(LDBRegister::utfToAscii(event));
 		stringstream s;
 		s << "     Numero de co-autores: " << event_coauthors[i];
 		reg_data.push_back(s.str());
 		i++;
 	}
-
-
 
 	int size = reg_data.size();
 	items = new ITEM*[size + 1];
@@ -403,8 +401,12 @@ void LDBAPI::searchName() {
 			}
 			mvdelch(3, 1 + buffer.size());
 			break;
+		case 32:
+			mvaddch(3, 1 + buffer.size(), c);
+			buffer.push_back(c);
+			break;
 		default:
-			if (isgraph(c) || isspace(c)) {
+			if (isgraph(c)) {
 				mvaddch(3, 1 + buffer.size(), c);
 				buffer.push_back(c);
 			}
@@ -465,8 +467,14 @@ void LDBAPI::searchName() {
 
 	} else {
 		LDBRegister result = lattes->get_by_name_full(buffer);
-		if(result.get_key().size()!=0){
+		if (result.get_key().size() != 0) {
 			showRegisterData(result);
+		} else {
+			clear();
+			mvwprintw(searchNameWin, 5, 1, "Nenhum registro encontrado.");
+			wrefresh(searchNameWin);
+			refresh();
+			getch();
 		}
 	}
 
