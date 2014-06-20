@@ -8,6 +8,7 @@
 #include "LDBAPI.h"
 #include "curses.h"
 #include "menu.h"
+#include <sstream>
 
 namespace std {
 
@@ -22,9 +23,10 @@ void LDBAPI::mainMenu() {
 	WINDOW *main_menu_win;
 	int i;
 	string main_options[] { "Adicionar XML", "Adicionar Diretorio",
-			"Buscar pelo nome do pesquisador",
-			"Buscar pelo instituto do pesquisador", "Exit", "\0" };
-	int main_options_size = 6;
+			"Mostar todos os resultados", "Buscar pelo nome do pesquisador",
+			"Buscar pelo instituto do pesquisador",
+			"Buscar pelos prefixos do nome e instituto", "Sair", "\0" };
+	int main_options_size = 8;
 
 	/* Initialize curses */
 	initscr();
@@ -45,12 +47,12 @@ void LDBAPI::mainMenu() {
 	main_menu = new_menu((ITEM **) main_menu_items);
 
 	/* Create the window to be associated with the menu */
-	main_menu_win = newwin(10, 40, 4, 4);
+	main_menu_win = newwin(9, 44, 4, 4);
 	keypad(main_menu_win, TRUE);
 
 	/* Set main window and sub window */
 	set_menu_win(main_menu, main_menu_win);
-	set_menu_sub(main_menu, derwin(main_menu_win, 8, 38, 1, 1));
+	set_menu_sub(main_menu, derwin(main_menu_win, 8, 42, 1, 1));
 
 	/* Print a border around the main window and print a title */
 	box(main_menu_win, 0, 0);
@@ -85,10 +87,18 @@ void LDBAPI::mainMenu() {
 				addDir();
 				break;
 			case 2:
-
-				showRegisterData(reg2);
+				showAll();
+				break;
+			case 3:
+				searchName();
 				break;
 			case 4:
+				searchInstitution();
+				break;
+			case 5:
+				searchNameInstitution();
+				break;
+			case 6:
 				exit = false;
 			}
 			box(main_menu_win, 0, 0);
@@ -119,6 +129,7 @@ void LDBAPI::addXML() {
 	keypad(addXMLWin, TRUE);
 	mvwprintw(addXMLWin, 5, 10, "Digite o nome do arquivo XML:");
 	mvdelch(6, 10);
+	deleteln();
 	wrefresh(addXMLWin);
 	while ((c = getch()) != 10) {
 		switch (c) {
@@ -130,7 +141,7 @@ void LDBAPI::addXML() {
 			mvdelch(6, 10 + buffer.size());
 			break;
 		default:
-			if (isalpha(c)) {
+			if (isgraph(c)) {
 				mvaddch(6, 10 + buffer.size(), c);
 				buffer.push_back(c);
 			}
@@ -145,7 +156,7 @@ void LDBAPI::addXML() {
 	mvwprintw(addXMLWin, 6, 6, "Pressione qualquer tecla para continuar.");
 	wrefresh(addXMLWin);
 	wgetch(addXMLWin);
-	wclear(addXMLWin);
+	clear();
 	wrefresh(addXMLWin);
 	delwin(addXMLWin);
 	endwin();
@@ -160,7 +171,8 @@ void LDBAPI::addDir() {
 	keypad(addDirWin, TRUE);
 	mvwprintw(addDirWin, 5, 10, "Digite o nome do arquivo XML:");
 	mvdelch(6, 10);
-	wrefresh (addDirWin);
+	deleteln();
+	wrefresh(addDirWin);
 	while ((c = getch()) != 10) {
 		switch (c) {
 		case KEY_BACKSPACE:
@@ -171,7 +183,7 @@ void LDBAPI::addDir() {
 			mvdelch(6, 10 + buffer.size());
 			break;
 		default:
-			if (isalpha (c)) {
+			if (isgraph(c)) {
 				mvaddch(6, 10 + buffer.size(), c);
 				buffer.push_back(c);
 			}
@@ -186,7 +198,7 @@ void LDBAPI::addDir() {
 	mvwprintw(addDirWin, 6, 6, "Pressione qualquer tecla para continuar.");
 	wrefresh(addDirWin);
 	wgetch(addDirWin);
-	wclear(addDirWin);
+	clear();
 	wrefresh(addDirWin);
 	delwin(addDirWin);
 	endwin();
@@ -300,7 +312,7 @@ void LDBAPI::printResults(vector<LDBRegister> results) {
 	int options[size];
 	items = new ITEM*[size + 1];
 
-	initscr();
+	//initscr();
 	cbreak();
 	noecho();
 	keypad(stdscr, TRUE);
@@ -320,10 +332,18 @@ void LDBAPI::printResults(vector<LDBRegister> results) {
 	WINDOW* sub_win = derwin(win, LINES - 3, COLS - 2, 3, 1);
 	set_menu_sub(menu, sub_win);
 
+	stringstream s;
+	if (size == 1) {
+		s << size << " Resultado";
+	} else {
+		s << size << " Resultados";
+	}
+
 	post_menu(menu);
 	box(win, 0, 0);
-	mvwprintw(win, 1, 1, "Resultados");
-	mvwprintw(win, LINES - 1, 1, "F2 - Retornar ao menu");
+	mvwprintw(win, 1, 1, s.str().c_str());
+	mvwprintw(win, LINES - 2, 1,
+			"F2 - Retornar ao menu\t\tENTER - Selecionar Registro");
 	pos_menu_cursor(menu);
 	wrefresh(win);
 
@@ -345,8 +365,9 @@ void LDBAPI::printResults(vector<LDBRegister> results) {
 			int option = *((int*) item_userptr(current_item(menu)));
 			//call result FUNÇÃO DO LUIZ
 			box(win, 0, 0);
-			mvwprintw(win, 1, 1, "Resultados");
-			mvwprintw(win, LINES - 1, 1, "F2 - Retornar ao menu");
+			mvwprintw(win, 1, 1, s.str().c_str());
+			mvwprintw(win, LINES - 2, 1,
+					"F2 - Retornar ao menu\t\tENTER - Selecionar Registro");
 			pos_menu_cursor(menu);
 			break;
 		}
@@ -354,13 +375,350 @@ void LDBAPI::printResults(vector<LDBRegister> results) {
 	}
 	unpost_menu(menu);
 	free_menu(menu);
+	clear();
 	for (int i = 0; i < size; ++i)
 		free_item(items[i]);
 	endwin();
 }
 
+void LDBAPI::searchName() {
+	WINDOW* searchNameWin;
+	int c;
+	string buffer;
+	searchNameWin = newwin(LINES, COLS, 0, 0);
+	keypad(searchNameWin, TRUE);
+	mvwprintw(searchNameWin, 1, 1, "Digite o nome pesquisador:");
+	mvwprintw(searchNameWin, 2, 1,
+			"(Para busca por prefixos acrescente * no final do prefixo)");
+	mvdelch(3, 1);
+	deleteln();
+	wrefresh(searchNameWin);
+	while ((c = getch()) != 10) {
+		switch (c) {
+		case KEY_BACKSPACE:
+			if (buffer.size() > 0) {
+				buffer.resize(buffer.size() - 1);
+				mvdelch(3, 1 + buffer.size());
+			}
+			mvdelch(3, 1 + buffer.size());
+			break;
+		default:
+			if (isgraph(c)) {
+				mvaddch(3, 1 + buffer.size(), c);
+				buffer.push_back(c);
+			}
+		}
+		wrefresh(searchNameWin);
+	}
+	if (buffer[buffer.size() - 1] == '*') {
+		vector<LDBRegister> result;
+		buffer.resize(buffer.size() - 1);
+		WINDOW* order_win;
+		MENU* order;
+		string texts[] = { "Ordem Alfabetica Crescente de Nome",
+				"Ordem Alfabetica Decrescente de Nome",
+				"Ordem Crescente de Numero Total de Publicacoes",
+				"Ordem Decrescente de Numero Total de Publicacoes",
+				"Ordem Crescente de Numero de Publicacoes em Periodicos",
+				"Ordem Decrescente de Numero de Publicacoes em Periodicos",
+				"Ordem Crescente de Numero de Publicacoes em Eventos",
+				"Ordem Decrescente de Numero de Publicacoes em Eventos" };
+		SORTING_ORDER options[] = { BY_ALPHABETICAL_ORDER,
+				BY_ALPHABETICAL_ORDER_REV, BY_N_PUBLICATIONS,
+				BY_N_PUBLICATIONS_REV, BY_N_JOURNALS, BY_N_JOURNALS_REV,
+				BY_N_EVENTS, BY_N_EVENTS_REV };
+		ITEM** items = new ITEM*[9];
+		for (int i = 0; i < 8; i++) {
+			items[i] = new_item(texts[i].c_str(), "\0");
+			set_item_userptr(items[i], (void*) &(options[i]));
+		}
+		items[8] = new_item("\0", "\0");
+		order = new_menu((ITEM **) items);
+
+		order_win = newwin(8, 60, 6, 1);
+		keypad(order_win, TRUE);
+
+		set_menu_win(order, order_win);
+		mvwprintw(searchNameWin, 5, 1,
+				"Selecione a ordem na qual os resultados serão mostrados:");
+		post_menu(order);
+		wrefresh(searchNameWin);
+		wrefresh(order_win);
+
+		while (((c = getch()) != 10)) {
+			switch (c) {
+			case KEY_DOWN:
+				menu_driver(order, REQ_DOWN_ITEM);
+				break;
+			case KEY_UP:
+				menu_driver(order, REQ_UP_ITEM);
+				break;
+			}
+			wrefresh(order_win);
+		}
+		SORTING_ORDER option = *((SORTING_ORDER*) item_userptr(
+				current_item(order)));
+		result = lattes->get_by_name_prefix(buffer, option);
+
+		printResults(result);
+
+	} else {
+		LDBRegister result = lattes->get_by_name_full(buffer);
+		//função do LUIS
+	}
+
+	clear();
+	wrefresh(searchNameWin);
+	delwin(searchNameWin);
+	endwin();
+}
+
+void LDBAPI::searchInstitution() {
+	WINDOW* searchNameWin;
+	int c;
+	string buffer;
+	searchNameWin = newwin(LINES, COLS, 0, 0);
+	keypad(searchNameWin, TRUE);
+	mvwprintw(searchNameWin, 1, 1, "Digite o nome do instituto:");
+	mvwprintw(searchNameWin, 2, 1,
+			"(Para busca por prefixos acrescente * no final do prefixo)");
+	mvdelch(3, 1);
+	deleteln();
+	wrefresh(searchNameWin);
+	while ((c = getch()) != 10) {
+		switch (c) {
+		case KEY_BACKSPACE:
+			if (buffer.size() > 0) {
+				buffer.resize(buffer.size() - 1);
+				mvdelch(3, 1 + buffer.size());
+			}
+			mvdelch(3, 1 + buffer.size());
+			break;
+		default:
+			if (isgraph(c)) {
+				mvaddch(3, 1 + buffer.size(), c);
+				buffer.push_back(c);
+			}
+		}
+		wrefresh(searchNameWin);
+	}
+
+	WINDOW* order_win;
+	MENU* order;
+	string texts[] = { "Ordem Alfabetica Crescente de Nome",
+			"Ordem Alfabetica Decrescente de Nome",
+			"Ordem Crescente de Numero Total de Publicacoes",
+			"Ordem Decrescente de Numero Total de Publicacoes",
+			"Ordem Crescente de Numero de Publicacoes em Periodicos",
+			"Ordem Decrescente de Numero de Publicacoes em Periodicos",
+			"Ordem Crescente de Numero de Publicacoes em Eventos",
+			"Ordem Decrescente de Numero de Publicacoes em Eventos" };
+	SORTING_ORDER options[] = { BY_ALPHABETICAL_ORDER,
+			BY_ALPHABETICAL_ORDER_REV, BY_N_PUBLICATIONS, BY_N_PUBLICATIONS_REV,
+			BY_N_JOURNALS, BY_N_JOURNALS_REV, BY_N_EVENTS, BY_N_EVENTS_REV };
+	ITEM** items = new ITEM*[9];
+	for (int i = 0; i < 8; i++) {
+		items[i] = new_item(texts[i].c_str(), "\0");
+		set_item_userptr(items[i], (void*) &(options[i]));
+	}
+	items[8] = new_item("\0", "\0");
+	order = new_menu((ITEM **) items);
+
+	order_win = newwin(8, 60, 6, 1);
+	keypad(order_win, TRUE);
+
+	set_menu_win(order, order_win);
+	mvwprintw(searchNameWin, 5, 1,
+			"Selecione a ordem na qual os resultados serão mostrados:");
+	post_menu(order);
+	wrefresh(searchNameWin);
+	wrefresh(order_win);
+
+	while (((c = getch()) != 10)) {
+		switch (c) {
+		case KEY_DOWN:
+			menu_driver(order, REQ_DOWN_ITEM);
+			break;
+		case KEY_UP:
+			menu_driver(order, REQ_UP_ITEM);
+			break;
+		}
+		wrefresh(order_win);
+	}
+	SORTING_ORDER option = *((SORTING_ORDER*) item_userptr(current_item(order)));
+	vector<LDBRegister> result;
+	if (buffer[buffer.size() - 1] == '*') {
+		buffer.resize(buffer.size() - 1);
+		result = lattes->get_by_institution_prefix(buffer);
+	} else {
+		result = lattes->get_by_institution_full(buffer);
+	}
+	printResults(result);
+	clear();
+	wrefresh(searchNameWin);
+	delwin(searchNameWin);
+	endwin();
+}
+
+void LDBAPI::searchNameInstitution() {
+	WINDOW* searchNameInstitutionWin;
+	int c;
+	string name;
+	string institution;
+	searchNameInstitutionWin = newwin(LINES, COLS, 0, 0);
+	keypad(searchNameInstitutionWin, TRUE);
+	mvwprintw(searchNameInstitutionWin, 1, 1,
+			"Digite o prefixo nome do pesquisador:");
+	mvdelch(2, 1);
+	deleteln();
+	wrefresh(searchNameInstitutionWin);
+	while ((c = getch()) != 10) {
+		switch (c) {
+		case KEY_BACKSPACE:
+			if (name.size() > 0) {
+				name.resize(name.size() - 1);
+				mvdelch(2, 1 + name.size());
+			}
+			mvdelch(2, 1 + name.size());
+			break;
+		default:
+			if (isgraph(c)) {
+				mvaddch(2, 1 + name.size(), c);
+				name.push_back(c);
+			}
+		}
+		wrefresh(searchNameInstitutionWin);
+	}
+	mvwprintw(searchNameInstitutionWin, 4, 1,
+			"Digite o prefixo instituto do pesquisador:");
+	mvdelch(5, 1);
+	deleteln();
+	wrefresh(searchNameInstitutionWin);
+	while ((c = getch()) != 10) {
+		switch (c) {
+		case KEY_BACKSPACE:
+			if (institution.size() > 0) {
+				institution.resize(institution.size() - 1);
+				mvdelch(5, 1 + institution.size());
+			}
+			mvdelch(5, 1 + institution.size());
+			break;
+		default:
+			if (isgraph(c)) {
+				mvaddch(5, 1 + institution.size(), c);
+				institution.push_back(c);
+			}
+		}
+		wrefresh(searchNameInstitutionWin);
+	}
+	WINDOW* order_win;
+	MENU* order;
+	string texts[] = { "Ordem Alfabetica Crescente de Nome",
+			"Ordem Alfabetica Decrescente de Nome",
+			"Ordem Crescente de Numero Total de Publicacoes",
+			"Ordem Decrescente de Numero Total de Publicacoes",
+			"Ordem Crescente de Numero de Publicacoes em Periodicos",
+			"Ordem Decrescente de Numero de Publicacoes em Periodicos",
+			"Ordem Crescente de Numero de Publicacoes em Eventos",
+			"Ordem Decrescente de Numero de Publicacoes em Eventos" };
+	SORTING_ORDER options[] = { BY_ALPHABETICAL_ORDER,
+			BY_ALPHABETICAL_ORDER_REV, BY_N_PUBLICATIONS, BY_N_PUBLICATIONS_REV,
+			BY_N_JOURNALS, BY_N_JOURNALS_REV, BY_N_EVENTS, BY_N_EVENTS_REV };
+	ITEM** items = new ITEM*[9];
+	for (int i = 0; i < 8; i++) {
+		items[i] = new_item(texts[i].c_str(), "\0");
+		set_item_userptr(items[i], (void*) &(options[i]));
+	}
+	items[8] = new_item("\0", "\0");
+	order = new_menu((ITEM **) items);
+
+	order_win = newwin(8, 60, 8, 1);
+	keypad(order_win, TRUE);
+
+	set_menu_win(order, order_win);
+	mvwprintw(searchNameInstitutionWin, 7, 1,
+			"Selecione a ordem na qual os resultados serão mostrados:");
+	post_menu(order);
+	wrefresh(searchNameInstitutionWin);
+	wrefresh(order_win);
+	while (((c = getch()) != 10)) {
+		switch (c) {
+		case KEY_DOWN:
+			menu_driver(order, REQ_DOWN_ITEM);
+			break;
+		case KEY_UP:
+			menu_driver(order, REQ_UP_ITEM);
+			break;
+		}
+		wrefresh(order_win);
+	}
+	SORTING_ORDER option = *((SORTING_ORDER*) item_userptr(current_item(order)));
+	vector<LDBRegister> result;
+	result = lattes->get_by_name_and_institution_prefix(name, institution,
+			option);
+	printResults(result);
+	clear();
+	wrefresh(searchNameInstitutionWin);
+	delwin(searchNameInstitutionWin);
+	endwin();
+}
+
+void LDBAPI::showAll() {
+	int c;
+	WINDOW* showAllWin = newwin(LINES, COLS, 0, 0);
+	WINDOW* order_win;
+	MENU* order;
+	string texts[] = { "Ordem Alfabetica Crescente de Nome",
+			"Ordem Alfabetica Decrescente de Nome",
+			"Ordem Crescente de Numero Total de Publicacoes",
+			"Ordem Decrescente de Numero Total de Publicacoes",
+			"Ordem Crescente de Numero de Publicacoes em Periodicos",
+			"Ordem Decrescente de Numero de Publicacoes em Periodicos",
+			"Ordem Crescente de Numero de Publicacoes em Eventos",
+			"Ordem Decrescente de Numero de Publicacoes em Eventos" };
+	SORTING_ORDER options[] = { BY_ALPHABETICAL_ORDER,
+			BY_ALPHABETICAL_ORDER_REV, BY_N_PUBLICATIONS, BY_N_PUBLICATIONS_REV,
+			BY_N_JOURNALS, BY_N_JOURNALS_REV, BY_N_EVENTS, BY_N_EVENTS_REV };
+	ITEM** items = new ITEM*[9];
+	for (int i = 0; i < 8; i++) {
+		items[i] = new_item(texts[i].c_str(), "\0");
+		set_item_userptr(items[i], (void*) &(options[i]));
+	}
+	items[8] = new_item("\0", "\0");
+	order = new_menu((ITEM **) items);
+
+	order_win = newwin(8, 60, 3, 1);
+	keypad(order_win, TRUE);
+
+	set_menu_win(order, order_win);
+	mvwprintw(showAllWin, 2, 1,
+			"Selecione a ordem na qual os resultados serão mostrados:");
+	post_menu(order);
+	wrefresh(showAllWin);
+	wrefresh(order_win);
+	while (((c = getch()) != 10)) {
+		switch (c) {
+		case KEY_DOWN:
+			menu_driver(order, REQ_DOWN_ITEM);
+			break;
+		case KEY_UP:
+			menu_driver(order, REQ_UP_ITEM);
+			break;
+		}
+		wrefresh(order_win);
+	}
+	SORTING_ORDER option = *((SORTING_ORDER*) item_userptr(current_item(order)));
+	vector<LDBRegister> results = lattes->get_all(option);
+	printResults(results);
+	clear();
+	wrefresh(showAllWin);
+	delwin(showAllWin);
+	endwin();
+
+}
+
 LDBAPI::~LDBAPI() {
-	// TODO Auto-generated destructor stub
+	delete lattes;
 }
 
 } /* namespace std */

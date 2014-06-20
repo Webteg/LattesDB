@@ -181,6 +181,8 @@ vector<LDBRegister> LattesDB::get_by_name_prefix(string name,
 
 vector<LDBRegister> LattesDB::get_by_name_and_institution_prefix(string name,
 		string institution, SORTING_ORDER sorting) {
+	name = LDBRegister::utfToAscii(name);
+	institution = LDBRegister::utfToAscii(institution);
 	vector<LDBRegister> result_1 = get_by_name_prefix(name, sorting);
 	vector<LDBRegister> result_2 = get_by_institution_prefix(institution, sorting);
 	int s1 = result_1.size();
