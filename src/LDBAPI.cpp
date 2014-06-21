@@ -602,7 +602,7 @@ void LDBAPI::searchNameInstitution() {
 			mvdelch(2, 1 + name.size());
 			break;
 		default:
-			if (isgraph(c) || c == ' ') {
+			if (isgraph(c) || isspace(c)) {
 				mvaddch(2, 1 + name.size(), c);
 				name.push_back(c);
 			}

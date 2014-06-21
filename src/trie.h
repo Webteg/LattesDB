@@ -70,6 +70,9 @@ public:
 			}
 			x = x->getChild(key[i++]);
 		}
+		if (x == NULL) {
+			return v;
+		}
 		stack<Trienode*> s;
 		s.push(x);
 		while (!s.empty()) {

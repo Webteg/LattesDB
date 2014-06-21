@@ -31,7 +31,7 @@ int main() {
 		cout << "\nTring to get records by name and institution prefix..."
 				<< endl;
 		cout << "Sorting: Alphabetical." << endl << flush;
-		results = lattes.get_by_name_and_institution_prefix("A", "U");
+		results = lattes.get_by_name_and_institution_prefix("", "a");
 		i = 0;
 		for (LDBRegister r : results) {
 			cout << i++ << " - " << r.get_name() << " - " << r.get_institution()
