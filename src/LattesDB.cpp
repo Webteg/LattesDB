@@ -58,7 +58,7 @@ bool LattesDB::readXMLDir(string dir_name) {
 	DIR *pDIR;
 	struct dirent *entry;
 
-	pDIR = opendir((string("./") + dir_name).c_str());
+	pDIR = opendir(dir_name.c_str());
 	if (pDIR) {
 		flag = true;
 		while ((entry = readdir(pDIR)) && flag == true) {
@@ -66,7 +66,7 @@ bool LattesDB::readXMLDir(string dir_name) {
 					&& strcmp(entry->d_name, "..") != 0) {
 
 				LDBRegister reg;
-				if (reg.readXML((string("xmlLattes/") + entry->d_name))) {
+				if (reg.readXML(dir_name + "/" + entry->d_name)) {
 					string name = reg.get_key();
 					unsigned long int find = namePrefix.get(name);
 					if (find == 0) {
